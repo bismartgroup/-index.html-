@@ -3,39 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | FIREBASE EDITION</title>
+    <title>NEXUS AI | ULTIMATE MASTER</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; }
         .dashboard { max-width: 1400px; margin: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 25px; position: relative; }
-        .badge { position: absolute; top: 15px; right: 15px; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; }
-        .free-badge { background: #333; } .vip-badge { background: var(--vip); color: #000; box-shadow: 0 0 15px var(--vip); }
-        input, select { width: 100%; padding: 15px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 15px; box-sizing: border-box; }
-        .btn-prime { width: 100%; padding: 16px; border-radius: 10px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 20px; position: relative; }
+        .badge { position: absolute; top: 15px; right: 15px; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        .free-badge { background: #333; } .vip-badge { background: var(--vip); color: #000; box-shadow: 0 0 10px var(--vip); }
+        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; }
+        .btn-prime { width: 100%; padding: 15px; border-radius: 10px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .feedback-btns { display: flex; gap: 10px; margin-top: 15px; display: none; }
-        .btn-win { flex: 1; background: #00ff80; color: #000; padding: 12px; border: none; border-radius: 8px; font-weight: bold; }
-        .btn-loss { flex: 1; background: #ff3e3e; color: #fff; padding: 12px; border: none; border-radius: 8px; font-weight: bold; }
-        #adminPanel { display: none; margin-top: 30px; border: 2px solid var(--admin); background: #110022; }
+        .btn-win { flex: 1; background: #00ff80; color: #000; padding: 10px; border-radius: 8px; font-weight: bold; }
+        .btn-loss { flex: 1; background: #ff3e3e; color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; }
+        #adminPanel { display: none; margin-top: 20px; border: 2px solid var(--admin); background: #110022; }
+        .broadcast-bar { background: rgba(0, 242, 255, 0.1); border: 1px solid var(--neon); color: var(--neon); padding: 10px; border-radius: 8px; font-size: 12px; margin-bottom: 15px; text-align: center; display: none; }
     </style>
 </head>
 <body>
 
 <div style="text-align:center;">
-    <h1 style="color:var(--neon); letter-spacing:3px;">NEXUS AI FIREBASE</h1>
-    <div id="marketTrend" style="color:#00ff80; border:1px solid #00ff80; padding:5px 15px; border-radius:50px; display:inline-block; font-size:12px; margin-bottom:20px;">SYNCING LIVE DATA...</div>
+    <h1 style="color:var(--neon); letter-spacing:3px;">NEXUS AI ULTIMATE</h1>
+    <div id="broadcast" class="broadcast-bar">📢 Welcome to Nexus AI Network!</div>
+    <div id="market" style="color:#00ff80; border:1px solid #00ff80; padding:5px 15px; border-radius:50px; display:inline-block; font-size:11px; margin-bottom:15px;">SYNCING LIVE DATA...</div>
 </div>
 
 <div class="dashboard">
     <div class="card">
-        <h3>LIVE GLOBAL ANALYTICS</h3>
-        <canvas id="liveChart" style="max-height:180px;"></canvas>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px; text-align:center;">
-            <div style="background:#000; padding:10px; border-radius:10px;">Wins: <span id="winCount" style="color:#00ff80;">0</span></div>
-            <div style="background:#000; padding:10px; border-radius:10px;">Losses: <span id="lossCount" style="color:#ff3e3e;">0</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>LIVE ANALYTICS</h3>
+            <select id="timeFilter" style="width:80px; font-size:10px;">
+                <option>1H</option><option>24H</option><option>Life</option>
+            </select>
+        </div>
+        <canvas id="liveChart" style="max-height:150px;"></canvas>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; text-align:center; font-size:12px;">
+            <div style="background:#000; padding:8px; border-radius:8px; border:1px solid #111;">Wins: <span id="wOut" style="color:#00ff80;">0</span></div>
+            <div style="background:#000; padding:8px; border-radius:8px; border:1px solid #111;">Losses: <span id="lOut" style="color:#ff3e3e;">0</span></div>
         </div>
     </div>
 
@@ -43,15 +50,15 @@
         <div id="statusBadge" class="badge free-badge">FREE PLAN</div>
         <h3>AI SIGNAL ENGINE</h3>
         <div id="vipLock" style="display:none; text-align:center;">
-            <p style="color:var(--vip);">⚠️ VIP KEY REQUIRED</p>
+            <p style="color:var(--vip); font-size:12px;">🔥 FREE LIMIT EXCEEDED</p>
             <input type="text" id="vKey" placeholder="ENTER VIP KEY">
             <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
         </div>
         <div id="mainUI">
             <input type="text" id="inputData" placeholder="Ex: 1.25, 4.50, 2.10">
-            <button class="btn-prime" onclick="runAI()">ANALYZE</button>
-            <div id="resArea" style="display:none; text-align:center; margin-top:20px;">
-                <span id="sigOut" style="font-size:42px; font-weight:900;">---</span>
+            <button class="btn-prime" onclick="runAI()">ANALYZE PATTERNS</button>
+            <div id="resArea" style="display:none; text-align:center; margin-top:15px;">
+                <span id="sigOut" style="font-size:38px; font-weight:900;">---</span>
                 <div class="feedback-btns" id="feedbackArea">
                     <button class="btn-win" onclick="recordResult('win')">WIN ✅</button>
                     <button class="btn-loss" onclick="recordResult('loss')">LOSS ❌</button>
@@ -62,12 +69,129 @@
 
     <div class="card">
         <h3>MONEY MANAGEMENT</h3>
-        <input type="number" id="balance" placeholder="Balance" oninput="calc()">
-        <div style="background:#000; padding:20px; border-radius:15px; text-align:center;">
-            <div style="font-size:11px; color:#555;">RECOMMENDED BET (5%)</div>
-            <div style="font-size:32px; color:var(--neon); font-weight:bold;" id="recBet">0.00</div>
+        <input type="number" id="balance" placeholder="Your Wallet Balance" oninput="calc()">
+        <select id="risk" onchange="calc()">
+            <option value="0.03">Safe (3%)</option>
+            <option value="0.05">Standard (5%)</option>
+            <option value="0.10">High Risk (10%)</option>
+        </select>
+        <div style="background:#000; padding:15px; border-radius:15px; text-align:center; border:1px solid #222;">
+            <div style="font-size:10px; color:#555;">RECOMMENDED BET</div>
+            <div style="font-size:28px; color:var(--neon); font-weight:bold;" id="recBet">0.00</div>
+        </div>
+    </div>
+</div>
 
-      
-    
-  
+<p style="text-align:center; font-size:10px; color:#222; cursor:pointer; margin-top:30px;" onclick="showAdmin()">- SYSTEM ADMINISTRATION -</p>
 
+<div id="adminPanel" class="card" style="max-width:500px; margin: 20px auto;">
+    <h2 style="color:var(--admin); font-size:18px;">ADMIN CONTROL PANEL</h2>
+    <input type="text" id="genKey" readonly placeholder="VIP Key Generator">
+    <button class="btn-prime" style="background:var(--admin);" onclick="generateKey()">CREATE VIP KEY</button>
+    <input type="text" id="alertMsg" placeholder="Type message for all users..." style="margin-top:15px;">
+    <button class="btn-prime" style="background:#333;" onclick="sendAlert()">BROADCAST MESSAGE</button>
+    <button class="btn-prime" style="background:none; border:1px solid #444; margin-top:10px;" onclick="closeAdmin()">CLOSE</button>
+</div>
+
+<script>
+    // Firebase Setup
+    const firebaseConfig = {
+        apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
+        authDomain: "nexus-ai-a5dd7.firebaseapp.com",
+        databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
+        projectId: "nexus-ai-a5dd7",
+        storageBucket: "nexus-ai-a5dd7.firebasestorage.app",
+        messagingSenderId: "754990038696",
+        appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let isVip = false; let localUsage = 0;
+
+    // Real-time Global Sync
+    db.ref('stats').on('value', (snap) => {
+        let d = snap.val() || { wins: 1420, losses: 85 };
+        document.getElementById('wOut').innerText = d.wins;
+        document.getElementById('lOut').innerText = d.losses;
+        updateChart(d.wins, d.losses);
+        let r = ((d.wins / (d.wins + d.losses)) * 100).toFixed(0);
+        document.getElementById('market').innerText = `MARKET: ${r > 90 ? 'EXCELLENT' : 'STABLE'} (${r}% WIN)`;
+    });
+
+    db.ref('broadcast').on('value', (snap) => {
+        let msg = snap.val();
+        if(msg) {
+            document.getElementById('broadcast').innerText = "📢 " + msg;
+            document.getElementById('broadcast').style.display = "block";
+        }
+    });
+
+    // Chart logic
+    const ctx = document.getElementById('liveChart').getContext('2d');
+    let myChart = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: ['Wins', 'Losses'], datasets: [{ data: [0, 0], backgroundColor: ['#00ff80', '#ff3e3e'] }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { display: false } } }
+    });
+
+    function updateChart(w, l) { myChart.data.datasets[0].data = [w, l]; myChart.update(); }
+
+    function runAI() {
+        if(!isVip && localUsage >= 3) {
+            document.getElementById('mainUI').style.display = 'none';
+            document.getElementById('vipLock').style.display = 'block';
+            return;
+        }
+        document.getElementById('resArea').style.display = 'block';
+        document.getElementById('feedbackArea').style.display = 'flex';
+        let sig = (Math.random() * (1.6 - 1.2) + 1.2).toFixed(2) + "x - " + (Math.random() * (4.2 - 2.1) + 2.1).toFixed(2) + "x";
+        document.getElementById('sigOut').innerText = sig;
+    }
+
+    function recordResult(type) {
+        db.ref('stats').once('value').then(snap => {
+            let cur = snap.val() || { wins: 1420, losses: 85 };
+            if(type === 'win') cur.wins++; else cur.losses++;
+            db.ref('stats').set(cur);
+            document.getElementById('feedbackArea').style.display = 'none';
+            localUsage++;
+        });
+    }
+
+    // Admin Panel Logic
+    function showAdmin() { if(prompt("Password:") === "nexus77") document.getElementById('adminPanel').style.display = "block"; }
+    function closeAdmin() { document.getElementById('adminPanel').style.display = "none"; }
+    function generateKey() {
+        let k = "NX-" + Math.random().toString(36).substr(2, 8).toUpperCase();
+        db.ref('keys/' + k).set({ status: "active" });
+        document.getElementById('genKey').value = k;
+    }
+    function sendAlert() {
+        let m = document.getElementById('alertMsg').value;
+        db.ref('broadcast').set(m);
+        alert("Message Broadcasted!");
+    }
+
+    function verifyKey() {
+        let k = document.getElementById('vKey').value;
+        db.ref('keys/' + k).once('value').then(snap => {
+            if(snap.exists() && snap.val().status === "active") {
+                isVip = true;
+                document.getElementById('statusBadge').innerText = "VIP ACTIVE";
+                document.getElementById('statusBadge').className = "badge vip-badge";
+                document.getElementById('mainUI').style.display = 'block';
+                document.getElementById('vipLock').style.display = 'none';
+                alert("VIP ACTIVATED!");
+            } else { alert("INVALID KEY!"); }
+        });
+    }
+
+    function calc() {
+        let b = document.getElementById('balance').value;
+        let r = document.getElementById('risk').value;
+        document.getElementById('recBet').innerText = (b * r).toFixed(2);
+    }
+</script>
+</body>
+</html>
