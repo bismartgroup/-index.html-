@@ -1,11 +1,10 @@
 
-           
-      <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ULTIMATE APP</title>
+    <title>NEXUS AI | MASTER SUITE</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -20,54 +19,57 @@
         :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; }
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; }
         .dashboard { max-width: 1400px; margin: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 20px; position: relative; }
-        .badge { position: absolute; top: 15px; right: 15px; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 25px; position: relative; }
+        .badge { position: absolute; top: 15px; right: 15px; padding: 5px 12px; border-radius: 8px; font-size: 11px; font-weight: 900; }
         .free-badge { background: #333; } .vip-badge { background: var(--vip); color: #000; box-shadow: 0 0 10px var(--vip); }
-        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 10px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 12px; box-sizing: border-box; }
+        .btn-prime { width: 100%; padding: 16px; border-radius: 10px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         .feedback-btns { display: flex; gap: 10px; margin-top: 15px; display: none; }
-        .btn-win { flex: 1; background: #00ff80; color: #000; padding: 10px; border-radius: 8px; font-weight: bold; }
-        .btn-loss { flex: 1; background: #ff3e3e; color: #fff; padding: 10px; border-radius: 8px; font-weight: bold; }
+        .btn-win { flex: 1; background: #00ff80; color: #000; padding: 12px; border-radius: 8px; font-weight: bold; border: none; }
+        .btn-loss { flex: 1; background: #ff3e3e; color: #fff; padding: 12px; border-radius: 8px; font-weight: bold; border: none; }
         #adminPanel { display: none; margin-top: 20px; border: 2px solid var(--admin); background: #110022; }
-        .install-bar { display: none; background: gold; color: black; padding: 12px; text-align: center; font-weight: bold; cursor: pointer; border-radius: 10px; margin-bottom: 15px; border: none; width: 100%; }
+        .install-bar { display: none; background: gold; color: black; padding: 12px; text-align: center; font-weight: bold; cursor: pointer; border-radius: 10px; margin-bottom: 15px; width: 100%; border: none; }
     </style>
 </head>
 <body>
 
 <div style="text-align:center;">
-    <h1 style="color:var(--neon); letter-spacing:3px; margin-bottom:5px;">NEXUS AI PRO</h1>
+    <h1 style="color:var(--neon); letter-spacing:3px; margin-bottom:5px;">NEXUS AI ULTIMATE</h1>
     <button id="installBtn" class="install-bar">📲 INSTALL NEXUS APP</button>
-    
-    <div id="broadcast" style="background:rgba(0,242,255,0.1); border:1px solid var(--neon); color:var(--neon); padding:8px; border-radius:8px; font-size:12px; margin-bottom:15px; display:none;">📢 Loading alerts...</div>
+    <div id="broadcast" style="background:rgba(0,242,255,0.1); border:1px solid var(--neon); color:var(--neon); padding:10px; border-radius:8px; font-size:12px; margin-bottom:15px; display:none;">📢 Loading alerts...</div>
     <div id="market" style="color:#00ff80; border:1px solid #00ff80; padding:5px 15px; border-radius:50px; display:inline-block; font-size:11px; margin-bottom:15px;">SYNCING LIVE DATA...</div>
 </div>
 
 <div class="dashboard">
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>LIVE ANALYTICS</h3>
-            <select style="width:70px; font-size:10px;"><option>Life</option></select>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+            <h3 style="margin:0;">ANALYTICS</h3>
+            <select id="timeFilter" style="width:100px; font-size:11px; margin:0;" onchange="filterData(this.value)">
+                <option value="1h">1H</option><option value="24h">24H</option><option value="7d">1 Week</option>
+                <option value="1y">1 Year</option><option value="life" selected>Lifetime</option>
+                <option value="manual">Manual</option>
+            </select>
         </div>
-        <canvas id="liveChart" style="max-height:140px;"></canvas>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px; text-align:center; font-size:12px;">
-            <div style="background:#000; padding:8px; border-radius:8px; border:1px solid #111;">Wins: <span id="wOut" style="color:#00ff80;">0</span></div>
-            <div style="background:#000; padding:8px; border-radius:8px; border:1px solid #111;">Losses: <span id="lOut" style="color:#ff3e3e;">0</span></div>
+        <canvas id="liveChart" style="max-height:150px;"></canvas>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px; text-align:center; font-size:12px;">
+            <div style="background:#000; padding:10px; border-radius:8px; border:1px solid #111;">Wins: <span id="wOut" style="color:#00ff80; font-weight:bold;">0</span></div>
+            <div style="background:#000; padding:10px; border-radius:8px; border:1px solid #111;">Losses: <span id="lOut" style="color:#ff3e3e; font-weight:bold;">0</span></div>
         </div>
     </div>
 
     <div class="card">
         <div id="statusBadge" class="badge free-badge">FREE PLAN</div>
-        <h3>SIGNAL ENGINE</h3>
+        <h3 style="margin:0 0 15px 0;">SIGNAL ENGINE</h3>
         <div id="vipLock" style="display:none; text-align:center;">
-            <p style="color:var(--vip); font-size:12px;">⚠️ LIMIT REACHED</p>
+            <p style="color:var(--vip); font-size:12px;">⚠️ FREE LIMIT EXCEEDED</p>
             <input type="text" id="vKey" placeholder="ENTER VIP KEY">
             <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
         </div>
         <div id="mainUI">
-            <input type="text" id="inputData" placeholder="Ex: 1.25, 4.50, 2.10">
-            <button class="btn-prime" onclick="runAI()">ANALYZE</button>
-            <div id="resArea" style="display:none; text-align:center; margin-top:15px;">
-                <span id="sigOut" style="font-size:38px; font-weight:900;">---</span>
+            <input type="text" id="inputData" placeholder="Enter last 3: 1.25, 4.50, 1.10">
+            <button class="btn-prime" onclick="runAI()">GENERATE SIGNAL</button>
+            <div id="resArea" style="display:none; text-align:center; margin-top:20px;">
+                <span id="sigOut" style="font-size:42px; font-weight:900;">---</span>
                 <div class="feedback-btns" id="feedbackArea">
                     <button class="btn-win" onclick="recordResult('win')">WIN ✅</button>
                     <button class="btn-loss" onclick="recordResult('loss')">LOSS ❌</button>
@@ -77,28 +79,31 @@
     </div>
 
     <div class="card">
-        <h3>MONEY MANAGEMENT</h3>
-        <input type="number" id="balance" placeholder="Wallet Balance" oninput="calc()">
-        <div style="background:#000; padding:15px; border-radius:15px; text-align:center; border:1px solid #222;">
-            <div style="font-size:10px; color:#555;">RECOMMENDED BET (5%)</div>
-            <div style="font-size:28px; color:var(--neon); font-weight:bold;" id="recBet">0.00</div>
+        <h3 style="margin:0 0 15px 0;">MONEY MANAGEMENT</h3>
+        <input type="number" id="balance" placeholder="Your Balance" oninput="calc()">
+        <select id="risk" onchange="calc()">
+            <option value="0.03">Safe (3%)</option><option value="0.05" selected>Standard (5%)</option>
+        </select>
+        <div style="background:#000; padding:20px; border-radius:15px; text-align:center; border:1px solid #222;">
+            <div style="font-size:11px; color:#555;">RECOMMENDED BET</div>
+            <div style="font-size:32px; color:var(--neon); font-weight:bold;" id="recBet">0.00</div>
         </div>
     </div>
 </div>
 
-<p style="text-align:center; font-size:10px; color:#222; cursor:pointer; margin-top:30px;" onclick="showAdmin()">- ADMINISTRATION -</p>
+<p style="text-align:center; font-size:10px; color:#222; cursor:pointer; margin-top:40px;" onclick="showAdmin()">- ADMINISTRATION -</p>
 
 <div id="adminPanel" class="card" style="max-width:500px; margin: 20px auto;">
     <h2 style="color:var(--admin); font-size:18px;">ADMIN PANEL</h2>
-    <input type="text" id="genKey" readonly placeholder="Key Gen">
+    <input type="text" id="genKey" readonly placeholder="Key Generator">
     <button class="btn-prime" style="background:var(--admin);" onclick="generateKey()">CREATE VIP KEY</button>
-    <input type="text" id="alertMsg" placeholder="Broadcast message..." style="margin-top:10px;">
-    <button class="btn-prime" style="background:#333;" onclick="sendAlert()">SEND ALERT</button>
+    <input type="text" id="alertMsg" placeholder="Type message..." style="margin-top:15px;">
+    <button class="btn-prime" style="background:#333;" onclick="sendAlert()">SEND BROADCAST</button>
     <button class="btn-prime" style="background:none; border:1px solid #444; margin-top:10px;" onclick="closeAdmin()">CLOSE</button>
 </div>
 
 <script>
-    // Firebase Config
+    // Firebase Setup
     const firebaseConfig = {
         apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
         authDomain: "nexus-ai-a5dd7.firebaseapp.com",
@@ -113,14 +118,12 @@
 
     let isVip = false; let localUsage = 0;
 
-    // Real-time Sync
+    // Real-time Data Sync
     db.ref('stats').on('value', snap => {
-        let d = snap.val() || { wins: 1420, losses: 85 };
-        document.getElementById('wOut').innerText = d.wins;
-        document.getElementById('lOut').innerText = d.losses;
-        chart.data.datasets[0].data = [d.wins, d.losses]; chart.update();
-        let r = ((d.wins / (d.wins + d.losses)) * 100).toFixed(0);
-        document.getElementById('market').innerText = `MARKET: ${r}% WIN RATE`;
+        if(document.getElementById('timeFilter').value === 'life') {
+            let d = snap.val() || { wins: 1420, losses: 85 };
+            updateUI(d.wins, d.losses);
+        }
     });
 
     db.ref('broadcast').on('value', snap => {
@@ -129,12 +132,33 @@
 
     // Chart
     const ctx = document.getElementById('liveChart').getContext('2d');
-    let chart = new Chart(ctx, { type: 'bar', data: { labels: ['Wins', 'Losses'], datasets: [{ data: [0, 0], backgroundColor: ['#00ff80', '#ff3e3e'] }] }, options: { plugins: { legend: { display: false } } } });
+    let chart = new Chart(ctx, { 
+        type: 'bar', 
+        data: { labels: ['Wins', 'Losses'], datasets: [{ data: [0, 0], backgroundColor: ['#00ff80', '#ff3e3e'] }] },
+        options: { plugins: { legend: { display: false } }, scales: { y: { display: false } } } 
+    });
 
-    // PWA Logic
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('installBtn').style.display = 'block'; });
-    document.getElementById('installBtn').addEventListener('click', () => { deferredPrompt.prompt(); document.getElementById('installBtn').style.display = 'none'; });
+    function updateUI(w, l) {
+        document.getElementById('wOut').innerText = w;
+        document.getElementById('lOut').innerText = l;
+        chart.data.datasets[0].data = [w, l]; chart.update();
+        let r = (w + l > 0) ? ((w / (w + l)) * 100).toFixed(0) : 0;
+        document.getElementById('market').innerText = `MARKET: ${r}% WIN RATE`;
+    }
+
+    // Time Filtering Logic
+    function filterData(range) {
+        if(range === 'life') return db.ref('stats').once('value').then(s => updateUI(s.val().wins, s.val().losses));
+        
+        let now = Date.now();
+        let startTime = (range === '1h') ? now - 3600000 : (range === '24h') ? now - 86400000 : (range === '7d') ? now - 604800000 : (range === '1y') ? now - 31536000000 : (range === 'manual') ? now - (prompt("Enter Hours:") * 3600000) : 0;
+
+        db.ref('verified_results').orderByChild('timestamp').startAt(startTime).once('value', snap => {
+            let w = 0; let l = 0;
+            snap.forEach(c => { if(c.val().result === 'win') w++; else l++; });
+            updateUI(w, l);
+        });
+    }
 
     // Business Logic
     function runAI() {
@@ -143,18 +167,24 @@
         document.getElementById('sigOut').innerText = (Math.random() * (1.6 - 1.2) + 1.2).toFixed(2) + "x - " + (Math.random() * (4.2 - 2.1) + 2.1).toFixed(2) + "x";
     }
 
-    function recordResult(type) {
+    function recordResult(result) {
+        let timestamp = Date.now();
+        db.ref('verified_results').push({ result, timestamp });
         db.ref('stats').once('value').then(snap => {
             let cur = snap.val() || { wins: 1420, losses: 85 };
-            if(type === 'win') cur.wins++; else cur.losses++;
-            db.ref('stats').set(cur); document.getElementById('feedbackArea').style.display = 'none'; localUsage++;
+            if(result === 'win') cur.wins++; else cur.losses++;
+            db.ref('stats').set(cur);
         });
+        document.getElementById('feedbackArea').style.display = 'none'; localUsage++;
     }
 
+    // PWA & Admin
+    let def; window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); def = e; document.getElementById('installBtn').style.display = 'block'; });
+    document.getElementById('installBtn').addEventListener('click', () => { if(def) def.prompt(); else alert("iPhone: Share > Add to Home Screen"); });
     function showAdmin() { if(prompt("Pass:") === "nexus77") document.getElementById('adminPanel').style.display = "block"; }
     function closeAdmin() { document.getElementById('adminPanel').style.display = "none"; }
     function generateKey() { let k = "NX-" + Math.random().toString(36).substr(2, 8).toUpperCase(); db.ref('keys/' + k).set({ status: "active" }); document.getElementById('genKey').value = k; }
-    function sendAlert() { db.ref('broadcast').set(document.getElementById('alertMsg').value); alert("Sent!"); }
+    function sendAlert() { db.ref('broadcast').set(document.getElementById('alertMsg').value); alert("Broadcast Sent!"); }
     function verifyKey() {
         let k = document.getElementById('vKey').value;
         db.ref('keys/' + k).once('value').then(snap => {
@@ -162,8 +192,4 @@
             else alert("Invalid Key!");
         });
     }
-    function calc() { document.getElementById('recBet').innerText = (document.getElementById('balance').value * 0.05).toFixed(2); }
-</script>
-</body>
-</html>
-
+    function calc() { document.getElementById('recBet').innerText = (document.getElementById('balance').value
