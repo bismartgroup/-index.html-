@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | MASTER V14.5</title>
+    <title>NEXUS AI MASTER</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; --pink: #ff00ff; }
+        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; }
         body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 10px; text-align: center; }
         .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; position: relative; }
         .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
         .btn-prime { background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; }
-        .btn-gold { background: var(--vip); color: black; }
-        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); box-sizing: border-box; margin-bottom: 10px; }
-        #pricing, #adminPanel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; padding: 20px; overflow-y: auto; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); box-sizing: border-box; margin-bottom: 10px; }
+        #overlay, #adminPanel { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; padding: 20px; overflow-y: auto; box-sizing: border-box; }
         .feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
-        .star { font-size: 25px; color: gray; cursor: pointer; }
-        .star.active { color: gold; }
-        .install-bar { display: none; background: gold; color: black; padding: 12px; font-weight: bold; border-radius: 10px; margin-bottom: 15px; width: 100%; border: none; }
-        .broadcast { background: rgba(112, 0, 255, 0.2); border: 1px solid var(--admin); padding: 10px; border-radius: 10px; margin-bottom: 15px; display: none; }
+        .star { font-size: 25px; color: gray; cursor: pointer; } .star.active { color: gold; }
     </style>
 </head>
 <body>
 
-    <button id="installBtn" class="install-bar">📲 INSTALL NEXUS APP</button>
-    <div id="broadcastArea" class="broadcast"></div>
+    <button id="installBtn" style="display:none; background:gold; color:black; width:100%; padding:10px; border:none; border-radius:8px; margin-bottom:10px; font-weight:bold;">📲 INSTALL APP</button>
+    <div id="broadcastArea" style="background:rgba(112,0,255,0.2); border:1px solid var(--admin); padding:10px; border-radius:10px; margin-bottom:10px; display:none;"></div>
 
-    <h1 style="color:var(--neon); margin:0;">NEXUS AI MASTER</h1>
-    <div style="color:#00ff80; border:1px solid #00ff80; padding:5px 15px; border-radius:20px; display:inline-block; font-size:11px; margin:10px 0;">SYNCING LIVE DATA...</div>
+    <h1 style="color:var(--neon);">NEXUS AI MASTER</h1>
 
     <div style="max-width:600px; margin:auto;">
         <div class="card">
@@ -42,7 +37,103 @@
             <h3>SIGNAL ENGINE</h3>
             <input type="text" id="vKeyInput" placeholder="ENTER VIP KEY">
             <button class="btn btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
-            <div id="lockUI"><button class="btn btn-gold" onclick="document.getElementById('pricing').style.display='block'">🚀 BUY VIP ACCESS</button></div>
+            <div id="lockUI"><button class="btn" style="background:var(--vip);" onclick="document.getElementById('overlay').style.display='block'">🚀 BUY VIP ACCESS</button></div>
             <div id="mainUI" style="display:none;">
                 <p id="freeMsg" style="font-size:12px; color:var(--neon);">Signals Left: 0</p>
                 <button class="btn btn-prime" onclick="runAI()">GENERATE SIGNAL</button>
+                <h2 id="sigOut" style="font-size:40px; color:var(--neon);">---</h2>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>SIGNAL MINING</h3>
+            <input type="text" id="mInput" placeholder="Add Last Rounds (1.2, 5.4)">
+            <button class="btn" style="background:#ff00ff; color:white;" onclick="mine()">ADD DATA</button>
+            <p style="font-size:11px;">Rounds Added: <span id="totalR">0</span></p>
+            <p style="font-size:10px; color:#666;">30->10 | 50->15 | 1000->30 Free Signals</p>
+        </div>
+
+        <div class="card">
+            <h3>GLOBAL WIN/LOSS</h3>
+            <canvas id="liveChart" style="max-height:140px;"></canvas>
+        </div>
+    </div>
+
+    <div id="overlay">
+        <h2>💎 VIP PACKAGES</h2>
+        <p>1 Day - 1000 | 7 Days - 2000 | Life - 50000</p>
+        <p>Bank: Commercial | Acc: 8080031546 | K.M.I.T. BANDARA</p>
+        <button class="btn btn-prime" onclick="window.open('https://wa.me/94762664220')">WHATSAPP RECEIPT</button>
+        <button class="btn" style="background:#333;" onclick="document.getElementById('overlay').style.display='none'">CLOSE</button>
+    </div>
+
+    <div id="adminPanel">
+        <h2>ADMIN PANEL</h2>
+        <button class="btn btn-prime" onclick="generateKey()">CREATE KEY</button>
+        <input type="text" id="kOut" readonly>
+        <button class="btn" style="background:#333;" onclick="document.getElementById('adminPanel').style.display='none'">CLOSE</button>
+    </div>
+
+    <p onclick="admin()" style="font-size:10px; color:#222; cursor:pointer; margin-top:40px;">- ADMIN -</p>
+
+    <script>
+        const config = {
+            apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
+            authDomain: "nexus-ai-a5dd7.firebaseapp.com",
+            databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
+            projectId: "nexus-ai-a5dd7",
+            storageBucket: "nexus-ai-a5dd7.firebasestorage.app",
+            messagingSenderId: "754990038696",
+            appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
+        };
+        firebase.initializeApp(config);
+        const db = firebase.database();
+
+        let rounds = 0, free = 0, vip = false;
+
+        const ctx = document.getElementById('liveChart').getContext('2d');
+        let chart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [10, 2], backgroundColor: ['#00ff80', '#ff3e3e'] }] } });
+
+        function mine() {
+            let v = document.getElementById('mInput').value;
+            if(!v) return;
+            rounds += v.split(',').length;
+            document.getElementById('totalR').innerText = rounds;
+            if(rounds >= 1000) free = 30; else if(rounds >= 50) free = 15; else if(rounds >= 30) free = 10;
+            if(free > 0) unlock();
+            document.getElementById('freeMsg').innerText = "Signals Left: " + free;
+            document.getElementById('mInput').value = "";
+        }
+
+        function unlock() { document.getElementById('lockUI').style.display='none'; document.getElementById('mainUI').style.display='block'; }
+
+        function runAI() {
+            if(!vip && free <= 0) return alert("Mine data first!");
+            document.getElementById('sigOut').innerText = (Math.random() * (9-5)+5).toFixed(2) + "x";
+            document.getElementById('fOverlay').style.display='flex';
+        }
+
+        function submitFeedback(res) {
+            if(!vip) free--;
+            document.getElementById('freeMsg').innerText = "Signals Left: " + free;
+            document.getElementById('fOverlay').style.display='none';
+            document.getElementById('sigOut').innerText = "---";
+        }
+
+        function verifyKey() {
+            let k = document.getElementById('vKeyInput').value;
+            db.ref('keys/'+k).once('value', s => {
+                if(s.exists()){ vip=true; unlock(); alert("VIP Active!"); } else alert("Invalid Key!");
+            });
+        }
+
+        function admin() { if(prompt("Pass:") === "nexus77") document.getElementById('adminPanel').style.display='block'; }
+        function generateKey() { let k = "NX-" + Math.random().toString(36).substr(2,8).toUpperCase(); db.ref('keys/'+k).set(true); document.getElementById('kOut').value = k; }
+        function rate(n) { let s = document.getElementById('stars').children; for(let i=0; i<5; i++) s[i].className = i<n?'star active':'star'; }
+
+        // Install Button
+        let def; window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); def = e; document.getElementById('installBtn').style.display='block'; });
+        document.getElementById('installBtn').addEventListener('click', () => { if(def) def.prompt(); });
+    </script>
+</body>
+</html>
