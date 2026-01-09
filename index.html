@@ -1,113 +1,106 @@
 
-
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ADVANCED ANALYTICS</title>
+    <title>NEXUS AI | COMPLETE ANALYTICS</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; }
+        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; }
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 15px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px; max-width: 1200px; margin: auto; }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        
-        /* Market Trend Badge */
-        .trend-badge { padding: 8px 15px; border-radius: 50px; font-size: 12px; font-weight: bold; margin-bottom: 20px; display: inline-block; }
-        .trend-good { background: rgba(0, 255, 128, 0.1); color: #00ff80; border: 1px solid #00ff80; }
-        
-        /* Feedback Buttons */
+        .dashboard { max-width: 1400px; margin: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
+        .badge { position: absolute; top: 15px; right: 15px; padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; }
+        .free { background: #333; } .vip { background: var(--vip); color: black; }
+        input, select { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #222; color: #fff; border-radius: 8px; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 15px; background: linear-gradient(45deg, #7000ff, var(--neon)); border: none; color: #fff; font-weight: bold; border-radius: 10px; cursor: pointer; }
         .feedback-btns { display: flex; gap: 10px; margin-top: 15px; display: none; }
-        .btn-win { flex: 1; background: #00ff80; color: #000; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-loss { flex: 1; background: #ff3e3e; color: #fff; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        
-        select { background: #000; color: var(--neon); border: 1px solid #333; padding: 5px; border-radius: 5px; }
-        .stat-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #111; font-size: 14px; }
+        .btn-win { flex: 1; background: #00ff80; color: #000; border: none; padding: 10px; border-radius: 8px; font-weight: bold; }
+        .btn-loss { flex: 1; background: #ff3e3e; color: #fff; border: none; padding: 10px; border-radius: 8px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div style="text-align:center;">
-    <h1 style="color:var(--neon); margin-bottom:5px;">NEXUS AI ULTIMATE</h1>
-    <div id="marketTrend" class="trend-badge trend-good">MARKET STATUS: EXCELLENT (WIN RATE 94%)</div>
+<div style="text-align:center; margin-bottom: 20px;">
+    <h1 style="color:var(--neon); letter-spacing: 2px;">NEXUS AI COMPLETE</h1>
+    <div id="market" style="color:#00ff80; font-size:12px; border:1px solid #00ff80; display:inline-block; padding:5px 15px; border-radius:50px;">MARKET: STABLE (94% WIN RATE)</div>
 </div>
 
-<div class="grid">
+<div class="dashboard">
     <div class="card">
+        <div id="planBadge" class="badge free">FREE PLAN</div>
         <h3>SIGNAL ENGINE</h3>
-        <input type="text" id="dataInput" placeholder="Ex: 1.25, 4.50, 1.10" style="width:100%; padding:12px; margin-bottom:10px; background:#000; border:1px solid #333; color:#fff; border-radius:8px;">
-        <button onclick="generateSignal()" style="width:100%; padding:15px; background:linear-gradient(45deg, #7000ff, var(--neon)); border:none; color:#fff; font-weight:bold; border-radius:8px; cursor:pointer;">GET SIGNAL</button>
-        
-        <div id="resultArea" style="display:none; text-align:center; margin-top:20px;">
-            <div id="sigDisplay" style="font-size:40px; font-weight:900;">---</div>
-            <p style="color:#666; font-size:11px;">DID THIS SIGNAL WIN?</p>
-            <div class="feedback-btns" id="feedbackArea">
-                <button class="btn-win" onclick="recordResult('win')">WIN ✅</button>
-                <button class="btn-loss" onclick="recordResult('loss')">LOSS ❌</button>
+        <input type="text" id="raw" placeholder="Last rounds: 1.25, 4.50...">
+        <button class="btn-main" onclick="getPrediction()">GET SIGNAL</button>
+        <div id="resArea" style="display:none; text-align:center; margin-top:20px;">
+            <div id="sigValue" style="font-size:42px; font-weight:900;">---</div>
+            <div id="feedback" class="feedback-btns">
+                <button class="btn-win" onclick="logResult('win')">WIN ✅</button>
+                <button class="btn-loss" onclick="logResult('loss')">LOSS ❌</button>
             </div>
         </div>
     </div>
 
     <div class="card">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3>LIVE STATISTICS</h3>
-            <select onchange="filterData(this.value)">
-                <option value="1h">Last 1H</option>
-                <option value="24h">Last 24H</option>
-                <option value="life">Lifetime</option>
+        <div style="display:flex; justify-content:space-between;">
+            <h3>STATISTICS</h3>
+            <select style="width:80px; padding:2px;" onchange="alert('Filtering...')">
+                <option>1H</option><option>24H</option><option>Life</option>
             </select>
         </div>
-        <canvas id="statChart" style="max-height:150px;"></canvas>
-        <div class="stat-row"><span>Total Verified Wins:</span> <span id="winCount" style="color:#00ff80; font-weight:bold;">1,420</span></div>
-        <div class="stat-row"><span>Total Verified Losses:</span> <span id="lossCount" style="color:#ff3e3e; font-weight:bold;">84</span></div>
+        <canvas id="barChart" style="max-height:120px;"></canvas>
+        <div style="font-size:13px; margin-top:10px;">
+            <p>Wins: <span id="w" style="color:#00ff80;">1421</span> | Losses: <span id="l" style="color:#ff3e3e;">85</span></p>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>MONEY MANAGEMENT</h3>
+        <input type="number" id="balance" placeholder="Wallet Balance" oninput="calc()">
+        <select id="risk" onchange="calc()">
+            <option value="0.03">Safe (3%)</option>
+            <option value="0.07">Aggressive (7%)</option>
+        </select>
+        <div style="background:#000; padding:15px; border-radius:10px; text-align:center;">
+            <div style="font-size:10px; color:#555;">RECOMMENDED BET</div>
+            <div id="bet" style="font-size:28px; color:var(--neon); font-weight:bold;">0.00</div>
+        </div>
     </div>
 </div>
 
 <script>
-    let wins = 1420;
-    let losses = 84;
-
-    function generateSignal() {
-        document.getElementById('resultArea').style.display = 'block';
-        document.getElementById('feedbackArea').style.display = 'flex';
-        let min = (Math.random() * (1.6 - 1.2) + 1.2).toFixed(2);
-        let max = (Math.random() * (4.5 - 2.2) + 2.2).toFixed(2);
-        document.getElementById('sigDisplay').innerText = min + "x - " + max + "x";
-    }
-
-    function recordResult(type) {
-        if(type === 'win') wins++; else losses++;
-        document.getElementById('winCount').innerText = wins;
-        document.getElementById('lossCount').innerText = losses;
-        document.getElementById('feedbackArea').style.display = 'none';
-        updateChart();
-        alert("Thanks for your feedback!");
-    }
-
-    // Chart logic
-    const ctx = document.getElementById('statChart').getContext('2d');
-    const myChart = new Chart(ctx, {
+    let wCount = 1421; let lCount = 85;
+    const ctx = document.getElementById('barChart').getContext('2d');
+    const chart = new Chart(ctx, {
         type: 'bar',
-        data: {
-            labels: ['Wins', 'Losses'],
-            datasets: [{
-                data: [wins, losses],
-                backgroundColor: ['#00ff80', '#ff3e3e']
-            }]
-        },
+        data: { labels: ['Wins', 'Losses'], datasets: [{ data: [wCount, lCount], backgroundColor: ['#00ff80', '#ff3e3e'] }] },
         options: { plugins: { legend: { display: false } } }
     });
 
-    function updateChart() {
-        myChart.data.datasets[0].data = [wins, losses];
-        myChart.update();
+    function getPrediction() {
+        document.getElementById('resArea').style.display = 'block';
+        document.getElementById('feedback').style.display = 'flex';
+        let min = (Math.random() * (1.6 - 1.2) + 1.2).toFixed(2);
+        let max = (Math.random() * (4.2 - 2.1) + 2.1).toFixed(2);
+        document.getElementById('sigValue').innerText = min + "x - " + max + "x";
     }
 
-    function filterData(val) {
-        // මෙතැනදී Filter කරන බව පෙන්වීමට අගයන් වෙනස් කිරීමේ Logic එකක් දැමිය හැක
-        alert("Filtering data for: " + val);
+    function logResult(type) {
+        if(type === 'win') wCount++; else lCount++;
+        document.getElementById('w').innerText = wCount;
+        document.getElementById('l').innerText = lCount;
+        chart.data.datasets[0].data = [wCount, lCount];
+        chart.update();
+        document.getElementById('feedback').style.display = 'none';
+    }
+
+    function calc() {
+        let b = document.getElementById('balance').value;
+        let r = document.getElementById('risk').value;
+        document.getElementById('bet').innerText = (b * r).toFixed(2);
     }
 </script>
 </body>
 </html>
+ 
