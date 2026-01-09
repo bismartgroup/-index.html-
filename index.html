@@ -1,154 +1,94 @@
 
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | MASTER V11</title>
+    <title>NEXUS AI | FINAL MASTER V12</title>
+    
+    <link rel="manifest" href="manifest.json">
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
         :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; --pink: #ff00ff; }
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; overflow-x: hidden; }
         .dashboard { max-width: 1400px; margin: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 15px; }
         .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 20px; position: relative; }
+        
+        /* Indicators */
         .hot-box { background: rgba(255, 0, 255, 0.05); border: 1px solid var(--pink); border-radius: 12px; padding: 15px; margin-bottom: 15px; text-align: center; }
+        .btn-prime { width: 100%; padding: 15px; border-radius: 10px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
         input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 10px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; }
+
+        /* Notification & Pricing Overlay */
         #liveNotif { position: fixed; bottom: 20px; left: 20px; background: rgba(0,255,128,0.9); color: black; padding: 10px 15px; border-radius: 50px; font-size: 12px; font-weight: bold; z-index: 1000; display: none; }
-        .reward-info { font-size: 10px; color: #888; margin-top: 5px; text-align: center; }
-        .probability-tag { font-size: 11px; color: var(--neon); font-weight: bold; }
+        #pricingPage { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; overflow-y: auto; padding: 20px; box-sizing: border-box; }
+        .plan-card { background: #1a1e26; border: 2px solid var(--vip); border-radius: 15px; padding: 20px; margin-bottom: 20px; text-align: center; }
+        
+        /* Admin Panel */
+        #adminPanel { display: none; margin-top: 20px; border: 2px solid var(--admin); background: #110022; }
     </style>
 </head>
 <body>
 
-<div id="liveNotif">User NX-4521 won Big! ✅</div>
+<div id="liveNotif">User Win Update! ✅</div>
+
+<div id="pricingPage">
+    <h2 style="color:var(--vip); text-align:center;">💎 GET VIP ACCESS</h2>
+    <div class="plan-card">
+        <h3>WEEKLY PRO</h3>
+        <p style="font-size:24px; color:var(--neon);">LKR 2,500</p>
+        <ul style="text-align:left; font-size:12px;">
+            <li>Unlimited 5x, 9x Signals</li>
+            <li>Big Odd Predictor Unlocked</li>
+            <li>No Data Entry Required</li>
+        </ul>
+        <hr>
+        <p style="font-size:10px;">Bank: Commercial | Acc: 123456789</p>
+        <input type="text" id="payID" placeholder="Payment ID / Transaction ID">
+        <button class="btn-prime" onclick="alert('Receipt Submitted!')">SUBMIT RECEIPT</button>
+        <button onclick="document.getElementById('pricingPage').style.display='none'" style="background:none; border:none; color:white; margin-top:10px; cursor:pointer;">Close</button>
+    </div>
+</div>
 
 <div style="text-align:center;">
-    <h1 style="color:var(--neon); letter-spacing:3px;">NEXUS AI <span style="color:var(--pink);">MASTER</span></h1>
-    <div id="market" style="color:#00ff80; border:1px solid #00ff80; padding:5px 15px; border-radius:50px; display:inline-block; font-size:11px; margin-bottom:15px;">SYNCING...</div>
+    <h1 style="color:var(--neon); letter-spacing:3px; margin:0;">NEXUS AI MASTER</h1>
+    <div id="market" style="color:#00ff80; border:1px solid #00ff80; padding:5px 15px; border-radius:50px; display:inline-block; font-size:11px; margin:10px 0;">SYNCING LIVE...</div>
+    <p style="font-size:10px; color:#888;">Online: <span id="userCount" style="color:var(--neon);">0</span></p>
 </div>
 
 <div class="dashboard">
     <div class="card">
         <div class="hot-box">
             <h4 style="margin:0; color:var(--pink);">🔥 BIG WIN PREDICTOR</h4>
-            <div id="bigWinTime" style="font-size:22px; font-weight:bold; margin:10px 0;">--:--</div>
+            <div id="bigWinTime" style="font-size:28px; font-weight:bold; margin:10px 0;">--:--</div>
             <div id="bigWinType" style="font-size:10px; color:#888;">WAITING FOR DATA...</div>
         </div>
-        <h3>CROWD DATA MINING</h3>
-        <p style="font-size:10px; color: #888;">Add 30 odds daily to keep system active.</p>
-        <input type="text" id="miningInput" placeholder="Enter last odds (Ex: 1.25, 20.4, 1.1)">
-        <button class="btn-prime" style="background:var(--pink);" onclick="mineData()">ADD DATA & ANALYZE</button>
-        <div class="reward-info">Data Added: <span id="dataCount">0</span>/30 | Free Signals: <span id="freeSig">0</span></div>
+        <input type="text" id="miningInput" placeholder="Add 30 Odds (Ex: 1.25, 10.4)">
+        <button class="btn-prime" style="background:var(--pink);" onclick="mineData()">MINE DATA & UNLOCK</button>
+        <div style="font-size:10px; text-align:center; margin-top:5px;">Data: <span id="dataCount">0</span>/30</div>
     </div>
 
     <div class="card">
         <div id="statusBadge" style="position:absolute; top:15px; right:15px; font-size:10px; color:var(--vip);">LOCKED</div>
         <h3>SIGNAL ENGINE</h3>
-        <div id="mainUI" style="opacity:0.3; pointer-events:none;">
-            <p id="lockMsg" style="font-size:10px; color:red;">Add 30 odds to unlock!</p>
-            <button class="btn-prime" onclick="runAI()">GET 5+ 9+ 6+ SIGNAL</button>
+        <div id="lockUI" style="text-align:center; padding:20px;">
+            <p style="color:red; font-size:12px;">Input data or buy VIP to unlock.</p>
+            <button class="btn-prime" onclick="document.getElementById('pricingPage').style.display='block'">🚀 UNLOCK SIGNALS</button>
+        </div>
+        <div id="mainUI" style="display:none;">
+            <button class="btn-prime" onclick="runAI()">GENERATE 5x - 9x SIGNAL</button>
             <div id="resArea" style="display:none; text-align:center; margin-top:20px;">
                 <span id="sigOut" style="font-size:42px; font-weight:900;">---</span>
-                <div class="probability-tag" id="probOut">2x Success: 80%</div>
+                <div id="probOut" style="color:var(--neon); font-size:12px; font-weight:bold;">Success Chance: 80%</div>
             </div>
         </div>
     </div>
 
     <div class="card">
         <h3>MONEY MANAGEMENT</h3>
-        <input type="number" id="balance" placeholder="Your Balance" oninput="calc()">
+        <input type="number" id="balance" placeholder="Balance" oninput="calc()">
         <div style="background:#000; padding:20px; border-radius:15px; text-align:center;">
-            <div style="font-size:10px; color:#555;">NEXT BET (5%)</div>
-            <div style="font-size:32px; color:var(--neon); font-weight:bold;" id="recBet">0.00</div>
-        </div>
-    </div>
-</div>
-
-<script>
-    const firebaseConfig = {
-        apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
-        authDomain: "nexus-ai-a5dd7.firebaseapp.com",
-        databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
-        projectId: "nexus-ai-a5dd7",
-        storageBucket: "nexus-ai-a5dd7.firebasestorage.app",
-        messagingSenderId: "754990038696",
-        appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let totalMined = 0;
-    let consecutiveLow = 0;
-
-    function mineData() {
-        let val = document.getElementById('miningInput').value;
-        if(!val) return;
-        let nums = val.split(',').map(Number);
-        
-        // --- High Multiplier Logic (Big Odd Predictor) ---
-        let latest = nums[nums.length - 1];
-        let now = new Date();
-        let bigWinText = "";
-        let timeRange = 0;
-
-        // logic for 5+ and 20+ within 5 rounds
-        let bigCount = nums.filter(n => n >= 5).length;
-        if(bigCount >= 2) {
-            timeRange = 3;
-            bigWinText = "Next 20+ Big Win";
-        } 
-        // Logic for 35+ with 25 round gap
-        else if (nums.some(n => n >= 35)) {
-            timeRange = 4;
-            bigWinText = "Next Big Win 35+";
-        }
-        // Logic for 50+ Super Time
-        else if (nums.some(n => n >= 50)) {
-            timeRange = 5;
-            bigWinText = "Next Super Time 50-100+";
-        }
-
-        if(timeRange > 0) {
-            let winTime = new Date(now.getTime() + timeRange * 60000);
-            document.getElementById('bigWinTime').innerText = winTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            document.getElementById('bigWinType').innerText = bigWinText + " (Next " + timeRange + " min range)";
-        }
-
-        // Logic for Low Odds and 2x Probability
-        nums.forEach(n => { if(n < 2) consecutiveLow++; else consecutiveLow = 0; });
-        let prob = 50 + (consecutiveLow * 5);
-        if(prob > 85) prob = 85;
-        document.getElementById('probOut').innerText = `2x Success Probability: ${prob}%`;
-
-        // Reward System
-        totalMined += nums.length;
-        document.getElementById('dataCount').innerText = totalMined;
-        if(totalMined >= 30) {
-            document.getElementById('mainUI').style.opacity = "1";
-            document.getElementById('mainUI').style.pointerEvents = "auto";
-            document.getElementById('lockMsg').style.display = "none";
-            document.getElementById('statusBadge').innerText = "UNLOCKED";
-            document.getElementById('statusBadge').style.color = "#00ff80";
-        }
-        
-        document.getElementById('freeSig').innerText = Math.floor(totalMined / 50) + (Math.floor(totalMined / 100) * 3);
-        db.ref('global_mining').push({nums, timestamp: Date.now()});
-        document.getElementById('miningInput').value = "";
-    }
-
-    function runAI() {
-        document.getElementById('resArea').style.display = 'block';
-        let odds = [5, 6, 9];
-        let res = odds[Math.floor(Math.random() * odds.length)];
-        document.getElementById('sigOut').innerText = res + ".00x+";
-    }
-
-    function calc() {
-        document.getElementById('recBet').innerText = (document.getElementById('balance').value * 0.05).toFixed(2);
-    }
-</script>
-</body>
-</html>
+            <div style="font-size:10px; color:#555;">NEXT BET (
