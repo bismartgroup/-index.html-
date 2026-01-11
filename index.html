@@ -60,7 +60,24 @@
             <p style="margin-top:10px; font-size:12px;">Total Added: <span id="tRounds" style="color:var(--neon)">0</span></p>
         </div>
     </div>
-
+<div class="card" style="border: 1px solid var(--neon); margin-top: 20px;">
+    <h3 style="color:var(--neon); font-size: 18px;">MONEY MANAGEMENT</h3>
+    <p style="font-size:11px; color:#888;">Enter capital to see bet amounts</p>
+    
+    <input type="number" id="capitalInput" placeholder="ENTER CAPITAL (LKR)" oninput="calculateBets()" 
+           style="width: 100%; padding: 12px; background: #000; color: var(--neon); border: 1px solid #333; border-radius: 8px;">
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
+        <div style="background: rgba(0,255,128,0.1); padding: 15px; border-radius: 10px; border: 1px solid var(--win);">
+            <p style="font-size: 10px; color: var(--win); margin: 0;">BET 01 (5%)</p>
+            <h2 id="bet1Display" style="margin: 5px 0;">0.00</h2>
+        </div>
+        <div style="background: rgba(255,0,255,0.1); padding: 15px; border-radius: 10px; border: 1px solid var(--pink);">
+            <p style="font-size: 10px; color: var(--pink); margin: 0;">BET 02 (2%)</p>
+            <h2 id="bet2Display" style="margin: 5px 0;">0.00</h2>
+        </div>
+    </div>
+</div>
 <script>
     // Firebase Config (ඔබේ Firebase දත්ත මෙතන තියෙනවා)
     const firebaseConfig = {
@@ -176,9 +193,26 @@ function submitRes(r) {
             else alert("Invalid Key!");
         });
     }
+    // මේ කොටස </script> ලකුණට හරියටම ඉහළින් දාන්න
+function calculateBets() {
+    let capital = document.getElementById('capitalInput').value;
+    let b1 = document.getElementById('bet1Display');
+    let b2 = document.getElementById('bet2Display');
+
+    if (capital > 0) {
+        // පළමු ඔට්ටුව (5%)
+        b1.innerText = (capital * 0.05).toFixed(2);
+        // දෙවන ඔට්ටුව (2%)
+        b2.innerText = (capital * 0.02).toFixed(2);
+    } else {
+        b1.innerText = "0.00";
+        b2.innerText = "0.00";
+    }
+}
 </script>
 </body>
 </html>
+
 
 
 
