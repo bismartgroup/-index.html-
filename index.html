@@ -76,15 +76,16 @@
         </div>
     </div>
 
-    <div class="card">
-        <h3>FREE SIGNAL MINING</h3>
-        <p style="font-size:11px; color:#666;">10 Rounds = 1 Free Signal</p>
-        <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.2, 5.4)">
-        <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD DATA</button>
-        <p style="text-align:center; font-size:11px; margin-top:10px;">Total Added: <span id="tRounds">0</span></p>
-    </div>
+  <div class="card">
+    <h3>FREE SIGNAL MINING</h3>
+    <p style="font-size:11px; color:#666;">10 Rounds = 1 Free Signal</p>
+    
+    <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.2, 5.4)">
+    
+    <button class="btn-prime" style="background:#ff00ff;" onclick="mine()">ADD DATA</button>
+    
+    <p style="text-align:center; font-size:11px; margin-top:10px;">Total Added: <span id="tRounds">0</span></p>
 </div>
-
 <div id="pricing" class="overlay">
     <h2>VIP PACKAGES</h2>
     <div class="card">
@@ -124,15 +125,26 @@
     }, 1500);
 
     function mine() {
-        let v = document.getElementById('mInput').value;
-        if(!v) return;
-        rounds += v.split(',').length;
-        document.getElementById('tRounds').innerText = rounds;
-        free = Math.floor(rounds/10);
-        if(free > 0) unlock();
-        document.getElementById('sLeft').innerText = "Signals Left: " + free;
-        document.getElementById('mInput').value = "";
-    }
+    let v = document.getElementById('mInput').value;
+    if(!v || v.trim() === "") return;
+
+    // කොමා වලින් වෙන් කර ඇති අංක ගණන් කිරීම
+    let newRounds = v.split(',').filter(n => n.trim() !== "").length;
+    
+    // දැනට ඇති rounds ගණනට අලුත් ඒවා එකතු කිරීම
+    rounds += newRounds;
+    
+    // තිරය මත අගයන් යාවත්කාලීන කිරීම
+    document.getElementById('tRounds').innerText = rounds;
+    
+    // සෑම වට 10 කටම එක සිග්නල් එකක් ලබා දීම
+    free = Math.floor(rounds / 10);
+    
+    if(free > 0) unlock();
+    
+    document.getElementById('sLeft').innerText = "Signals Left: " + free;
+    document.getElementById('mInput').value = ""; // Input එක හිස් කිරීම
+}
 
     function unlock() { document.getElementById('lockUI').style.display='none'; document.getElementById('unlockUI').style.display='block'; }
 
@@ -180,4 +192,5 @@ function genSig() {
 </script>
 </body>
 </html>
+
 
