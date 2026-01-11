@@ -3,22 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ENTERPRISE V15.2 FINAL</title>
+    <title>NEXUS AI | ULTIMATE V15.2</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; --pink: #ff00ff; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; overflow-x: hidden; }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        h1, h3 { font-family: 'Orbitron', sans-serif; letter-spacing: 2px; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.3s; }
-        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 30px; min-height: 150px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
+        h1, h3 { font-family: 'Orbitron', sans-serif; margin: 10px 0; }
+        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; }
         
-        /* ලොකු අකුරින් පේන්න Styles */
-        #sampleOdds, #sigVal { font-size: 65px; font-weight: 900; color: var(--neon); text-shadow: 0 0 20px var(--neon); margin: 0; }
-        #sigVal { color: var(--win); text-shadow: 0 0 20px var(--win); }
+        /* Signal Display */
+        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
+        #sigVal { color: var(--win); text-shadow: 0 0 15px var(--win); }
 
         .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
-        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid #1a1e26; }
+    </style>
+</head>
+<body>
+
+    <h1 style="color:var(--neon);">NEXUS AI <span style="color:var(--vip);">V15.2</span></h1>
+
+    <div style="max-width:500px; margin:auto;">
+        <div class="card">
+            <div class="f-overlay" id="fOverlay">
+                <h3 style="margin-bottom:15px;">CONFIRM RESULT</h3>
+                <button class="btn-prime" style="background:var(--win); color:black;" onclick="submitRes('win')">WIN ✅</button>
+                <button class="btn-prime" style="background:var(--loss);" onclick="submitRes('loss')">LOSS ❌</button>
+            </div>
+
+            <div class="signal-box">
+                <div id="sampleArea">
+                    <p id="sampleOdds">1.00x</p>
+                    <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
+                </div>
+                <div id="realSigArea" style="display:none;">
+                    <p id="sigVal">---</p>
+                    <p style="font-size:12px; color:var(--win);">AI ANALYSIS ACTIVE</p>
