@@ -117,13 +117,19 @@
     // 1. සිග්නල් ඉතිරිව ඇත්දැයි බැලීම
     if(!vip && free <= 0) return alert("Mine 10 rounds to get a free signal!");
 
-    // 2. VIP නොවේ නම් වට 10ක් අඩු කිරීමේ logic එක
-    if(!vip) {
-        rounds = rounds - 10; // මුළු වට ප්‍රමාණයෙන් 10ක් අඩු කරයි
-        if(rounds < 0) rounds = 0; // වට ප්‍රමාණය 0ට වඩා අඩු නොවීමට
-        
-        document.getElementById('tRounds').innerText = rounds; // තිරය මත අගය අඩු කරයි
-    }
+    // 2. සිග්නල් එක පෙන්වීම
+    document.getElementById('sampleArea').style.display = 'none';
+    document.getElementById('realSigArea').style.display = 'block';
+    
+    let res = (Math.random() * (9.5 - 5.0) + 5.0).toFixed(2);
+    document.getElementById('sigVal').innerText = res + "x";
+    
+    // 3. Feedback මෙනුව පෙන්වීම
+    setTimeout(() => {
+        document.getElementById('fOverlay').style.display = 'flex';
+        document.getElementById('genBtn').style.display = 'none';
+    }, 1500);
+}
 
     // 3. සිග්නල් එක පෙන්වීම
     document.getElementById('sampleArea').style.display = 'none';
@@ -138,17 +144,31 @@
         document.getElementById('genBtn').style.display = 'none';
     }, 1500);
 function submitRes(r) {
-    // ඉතිරිව ඇති සිග්නල් ගණන නැවත ගණනය කිරීම
-    free = Math.floor(rounds / 10);
-    document.getElementById('sLeft').innerText = "Signals Left: " + free;
+    // 1. VIP නොවේ නම් සිග්නල් එකක් පාවිච්චි කළ පසු වට 10ක් අඩු කරයි
+    if(!vip) {
+        rounds = rounds - 10; 
+        if(rounds < 0) rounds = 0;
+        
+        // ඉතිරි සිග්නල් ගණන නැවත ගණනය කිරීම
+        free = Math.floor(rounds / 10);
+        
+        // තිරය මත අගයන් යාවත්කාලීන කිරීම
+        document.getElementById('tRounds').innerText = rounds;
+        document.getElementById('sLeft').innerText = "Signals Left: " + free;
+    }
 
-    // Reset UI
+    // 2. UI එක මුල් තත්ත්වයට පත් කිරීම
     document.getElementById('fOverlay').style.display = 'none';
     document.getElementById('realSigArea').style.display = 'none';
     document.getElementById('sampleArea').style.display = 'block';
     document.getElementById('genBtn').style.display = 'block';
-}
 
+    // 3. සිග්නල් ඉවර නම් නැවත lockUI පෙන්වීම
+    if(!vip && free <= 0) {
+        document.getElementById('unlockUI').style.display = 'none';
+        document.getElementById('lockUI').style.display = 'block';
+    }
+}
     function verifyKey() {
         let key = document.getElementById('vKey').value;
         db.ref('keys/' + key).once('value', s => {
@@ -159,4 +179,5 @@ function submitRes(r) {
 </script>
 </body>
 </html>
+
 
