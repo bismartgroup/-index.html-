@@ -33,11 +33,23 @@
 <div class="dashboard">
     <div class="card">
         <h3>SIGNAL ENGINE</h3>
-        <div class="signal-box">
-            <div id="sampleArea">
-                <span id="sampleOdds">1.00x</span>
-                <div style="font-size:10px; color:var(--loss); font-weight:bold; margin-top:5px;">SAMPLE ONLY - DONT BET</div>
-            </div>
+       <div class="signal-box">
+    <div id="sampleArea">
+        <span id="sampleOdds" style="font-size:45px; font-weight:bold; color:var(--neon);">1.00x</span>
+        <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
+    </div>
+
+    <div id="realSigArea" style="display:none; text-align:center;">
+        <span id="sigVal" style="font-size:60px; font-weight:900; color:var(--win); text-shadow: 0 0 20px var(--win);">---</span>
+        <p style="font-size:12px; color:var(--win); margin-top:5px;">AI PREDICTED SIGNAL</p>
+    </div>
+</div>
+
+    <div id="realSigArea" style="display:none; text-align:center;">
+        <span id="sigVal" style="font-size:60px; font-weight:900; color:var(--win); text-shadow: 0 0 20px var(--win);">---</span>
+        <p style="font-size:12px; color:var(--win); margin-top:5px;">AI PREDICTED SIGNAL</p>
+    </div>
+</div>
 
             <div id="realSigArea" style="display:none;">
                 <h2 id="sigValue" style="font-size:60px; margin:0; color:var(--win);">---</h2>
@@ -124,13 +136,28 @@
 
     function unlock() { document.getElementById('lockUI').style.display='none'; document.getElementById('unlockUI').style.display='block'; }
 
-    function genSig() {
-        if(!vip && free <= 0) return alert("Mine data first!");
-        document.getElementById('sampleArea').style.display='none';
-        document.getElementById('realSigArea').style.display='block';
-        document.getElementById('sigValue').innerText = (Math.random() * (9-5)+5).toFixed(2) + "x";
-        document.getElementById('fOverlay').style.display='flex';
-    }
+   
+    // තත්පර 1.5කට පසු Win/Loss තෝරන මෙනුව පෙන්වනවා
+    setTimeout(()  function genSig() // මේ කොටස පේස්ට් කරන්න (පරණ genSig එක වෙනුවට)
+function genSig() {
+    // සිග්නල් ඉතිරිව තිබේදැයි බලනවා
+    if(!vip && free <= 0) return alert("Mine data first!");
+
+    // බොත්තම එබූ සැනින් සාම්පල අංක වසා, සිග්නල් පෙන්වන තැන විවෘත කරයි
+    document.getElementById('sampleArea').style.display = 'none';
+    document.getElementById('realSigArea').style.display = 'block';
+
+    // අහඹු සිග්නල් එකක් හදනවා
+    let predictedOdds = (Math.random() * (9.5 - 5.0) + 5.0).toFixed(2);
+    
+    // එම අගය තිරයේ පෙන්වනවා
+    document.getElementById('sigVal').innerText = predictedOdds + "x";
+
+    // තත්පර 1.5කට පසු Win/Loss මෙනුව පෙන්වනවා
+    setTimeout(() => {
+        document.getElementById('fOverlay').style.display = 'flex';
+    }, 1500);
+}
 
     function handleRes(r) {
         if(!vip) free--;
@@ -153,3 +180,4 @@
 </script>
 </body>
 </html>
+
