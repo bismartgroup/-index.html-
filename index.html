@@ -3,92 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ENTERPRISE V15.8</title>
+    <title>NEXUS AI | ULTIMATE V16</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    
     <style>
         :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; --pink: #ff00ff; --win: #00ff80; --loss: #ff3e3e; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 10px; text-align: center; }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; font-size: 14px; }
+        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 10px; text-align: center; }
+        .container { max-width: 600px; margin: auto; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; transition: 0.3s; }
         .btn-prime { background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; }
         .btn-gold { background: var(--vip); color: black; }
         input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); box-sizing: border-box; margin-bottom: 10px; }
         
-        /* Signal Display Box */
-        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 30px; min-height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-        #sigOutput { font-size: 50px; font-weight: bold; color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+        /* Signal UI */
+        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+        #sigOut { font-size: 50px; font-weight: bold; color: var(--neon); text-shadow: 0 0 15px var(--neon); }
+        .feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
         
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 1000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .feedback-pop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
-        .stat-box { background: #111; padding: 10px; border-radius: 8px; font-size: 12px; }
+        /* Stats Display */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 13px; }
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-    <h1 style="color:var(--neon); margin:10px 0;">NEXUS AI <span style="color:var(--vip);">V15.8</span></h1>
+<div class="container">
+    <h1 style="color:var(--neon); margin:10px 0; font-size: 24px;">NEXUS AI <span style="color:var(--vip);">MASTER V16</span></h1>
+    <div id="uCount" style="font-size:11px; color:#888; margin-bottom:15px;">Connecting to secure server...</div>
 
-    <div style="max-width:500px; margin:auto;">
-        
-        <div class="card">
-            <div class="feedback-pop" id="fPop">
-                <h3 style="margin-bottom:15px;">CONFIRM RESULT</h3>
-                <button class="btn" style="background:var(--win); color:black;" onclick="submitRes('win')">WIN ✅</button>
-                <button class="btn" style="background:var(--loss); color:white;" onclick="submitRes('loss')">LOSS ❌</button>
+    <div class="card">
+        <div class="feedback-overlay" id="fOverlay">
+            <h3 style="margin-bottom:15px;">CONFIRM LAST RESULT</h3>
+            <button class="btn" style="background:var(--win); color:black;" onclick="handleResult('win')">WIN ✅</button>
+            <button class="btn" style="background:var(--loss); color:white;" onclick="handleResult('loss')">LOSS ❌</button>
+        </div>
+
+        <div class="signal-box">
+            <div id="sampleArea">
+                <span id="sampleVal" style="font-size:40px; color:#333;">1.00x</span>
+                <div style="font-size:10px; color:var(--loss);">SAMPLE DATA - DONT BET</div>
             </div>
-
-            <div class="signal-box">
-                <div id="sampleArea">
-                    <span id="sampleTxt" style="font-size:40px; color:#444;">1.00x</span>
-                    <div style="font-size:10px; color:var(--loss);">SAMPLE DATA</div>
-                </div>
-                <div id="realSigArea" style="display:none;">
-                    <span id="sigOutput">---</span>
-                    <div id="aiStatus" style="font-size:12px; color:var(--win);">ANALYZING...</div>
-                </div>
-            </div>
-
-            <div id="lockUI">
-                <input type="text" id="vipKey" placeholder="ENTER VIP KEY">
-                <button class="btn btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
-                <button class="btn btn-gold" onclick="openPage('pricing')">🚀 UNLOCK VIP</button>
-            </div>
-
-            <div id="mainUI" style="display:none;">
-                <p id="sLeft" style="font-size:12px; color:var(--vip);">Signals: 0</p>
-                <div id="siteSelect">
-                    <button class="btn btn-prime" onclick="setSite('1XBET')">1XBET</button>
-                    <button class="btn btn-prime" style="background:var(--pink);" onclick="setSite('OTHER')">OTHER SITES</button>
-                </div>
-                <div id="inputArea" style="display:none;">
-                    <input type="text" id="oddsInput" placeholder="Enter last 10 odds (e.g. 1.2, 5.4)">
-                    <button class="btn btn-prime" onclick="generateSig()">GENERATE SIGNAL</button>
-                </div>
+            <div id="realSigArea" style="display:none;">
+                <span id="sigOut">---</span>
+                <div id="aiStatus" style="font-size:12px; color:var(--win);">AI ANALYZING...</div>
             </div>
         </div>
 
-        <div class="card">
-            <h3>SIGNAL MINING</h3>
-            <input type="text" id="mineIn" placeholder="Add Rounds (Ex: 1.25, 4.2)">
-            <button class="btn" style="background:var(--pink); color:white;" onclick="mineData()">ADD DATA</button>
-            <div class="stat-grid">
-                <div class="stat-box">Added: <b id="totalR">0</b></div>
-                <div class="stat-box">Win Rate: <b id="winRate">0%</b></div>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="pricing" class="overlay">
-        <h2>VIP PACKAGES</h2>
-        <div class="card" style="text-align:left;">
-            <p>BOC: 93015029 (BANDARA)</p>
-            <p>SAMPATH: 120352053430 (JAYARATHNA)</p>
-            <p>1 Day: 1000 | 7 Day: 2000 | Life: 50000</p>
-            <button class="btn btn-gold" onclick="window.open('https://wa.me/94762664220')">WHATSAPP RECEIPT</button>
-        </div>
-        <button class="btn" style="background:#333;" onclick="closePage('pricing')">CLOSE</button>
-    </div>
-
-    <p onclick="admin()" style="font-size:10px; color:#222; cursor:pointer; margin-top:50px;">- ADMINISTRATION -</p>
-
-    <script
+        <div id="lockUI">
+            <input type="text" id="vKey" placeholder="ENTER
