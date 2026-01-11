@@ -106,23 +106,7 @@
         document.getElementById('sLeft').innerText = "Signals Left: " + free;
         input.value = ""; // Input එක හිස් කරනවා
     }
-<div class="card" style="border: 1px solid var(--neon);">
-    <h3 style="color:var(--neon);">MONEY MANAGEMENT</h3>
-    <p style="font-size:11px; color:#888;">Enter your capital to calculate safe bet amounts.</p>
-    
-    <input type="number" id="capitalInput" placeholder="ENTER YOUR CAPITAL (LKR)" oninput="calculateBets()">
-    
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px;">
-        <div style="background: rgba(0,255,128,0.1); padding: 10px; border-radius: 10px; border: 1px solid var(--win);">
-            <p style="font-size: 10px; margin: 0; color: var(--win);">BET 01 (Safe)</p>
-            <h2 id="bet1Display" style="margin: 5px 0; color: #fff;">0.00</h2>
-        </div>
-        <div style="background: rgba(255,0,255,0.1); padding: 10px; border-radius: 10px; border: 1px solid var(--pink);">
-            <p style="font-size: 10px; margin: 0; color: var(--pink);">BET 02 (Risk)</p>
-            <h2 id="bet2Display" style="margin: 5px 0; color: #fff;">0.00</h2>
-        </div>
-    </div>
-</div>
+
     function unlock() {
         document.getElementById('lockUI').style.display = 'none';
         document.getElementById('unlockUI').style.display = 'block';
@@ -195,6 +179,7 @@ function submitRes(r) {
 </script>
 </body>
 </html>
+
 
 
 
