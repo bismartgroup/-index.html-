@@ -3,130 +3,319 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | MASTER V14.1</title>
+    <title>NEXUS AI | ENTERPRISE V15</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; --pink: #ff00ff; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; padding: 10px; text-align: center; }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 25px; margin-bottom: 20px; position: relative; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 10px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); box-sizing: border-box; margin-bottom: 10px; }
+        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; --pink: #ff00ff; --win: #00ff80; --loss: #ff3e3e; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; overflow-x: hidden; }
+        .dashboard { max-width: 1400px; margin: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 15px; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 20px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; }
         
-        /* Feedback Popup */
-        .feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
-        .star { font-size: 30px; color: gray; cursor: pointer; } .star.active { color: gold; }
+        /* Buttons */
+        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-gold { background: linear-gradient(45deg, #bf953f, #fcf6ba, #aa771c); color: black; }
+        .btn-win { background: var(--win); color: black; }
+        .btn-loss { background: var(--loss); color: white; }
         
-        /* Signal Display Box */
-        #sigOut { font-size: 55px; font-weight: 900; color: var(--neon); text-shadow: 0 0 20px var(--neon); display: block; margin: 15px 0; }
-        .broadcast { background: rgba(112, 0, 255, 0.2); border: 1px solid var(--admin); padding: 12px; border-radius: 10px; margin-bottom: 15px; display: none; }
+        /* Signal Display */
+        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 20px; margin: 15px 0; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        #sigValue { font-size: 50px; font-weight: 900; color: var(--neon); text-shadow: 0 0 20px var(--neon); }
+        .status-msg { font-size: 12px; font-weight: bold; margin-top: 5px; }
+        
+        /* Overlays */
+        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        .active { display: block !important; }
+        
+        /* Stats & Charts */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .stat-item { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; text-align: center; }
+
+        /* Animation */
+        @keyframes starPop { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1.2); opacity: 1; } }
+        .congrats { animation: starPop 0.5s ease-out forwards; color: var(--vip); font-size: 24px; text-align: center; }
+
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="broadcastArea" class="broadcast"></div>
-    <h1 style="color:var(--neon);">NEXUS AI <span style="color:var(--vip);">V14.1</span></h1>
+<div style="display:flex; justify-content: space-between; padding: 10px; font-size: 12px; background: rgba(0,0,0,0.5); border-radius: 10px; margin-bottom: 15px;">
+    <span>Online Users: <b id="userCount">124</b></span>
+    <span id="vipStatus" style="color:var(--vip);">FREE ACCOUNT</span>
+</div>
 
-    <div style="max-width:600px; margin:auto;">
-        <div class="card">
-            <div class="feedback-overlay" id="fOverlay">
-                <h3>RATE & CONFIRM</h3>
-                <div id="stars"><span class="star" onclick="rate(1)">★</span><span class="star" onclick="rate(2)">★</span><span class="star" onclick="rate(3)">★</span><span class="star" onclick="rate(4)">★</span><span class="star" onclick="rate(5)">★</span></div>
-                <button class="btn-prime" style="background:#00ff80; color:black; margin-top:15px;" onclick="submitFeedback('win')">WIN ✅</button>
-                <button class="btn-prime" style="background:#ff3e3e; margin-top:5px;" onclick="submitFeedback('loss')">LOSS ❌</button>
+<div class="dashboard">
+    <div class="card">
+        <h3>SIGNAL ENGINE</h3>
+        <div class="signal-box" id="sigMainBox">
+            <div id="loadingAnim" style="display:none;">ANALYZING MARKET...</div>
+            <div id="sigDisplayArea">
+                <span id="sigValue">1.00x</span>
+                <div id="sigSubText" style="font-size:10px; color:#555;">SAMPLE ONLY - DONT BET</div>
             </div>
-
-            <div id="lockUI">
-                <input type="text" id="vKeyInput" placeholder="ENTER VIP KEY">
-                <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
-                <button class="btn-prime" style="background:var(--vip); color:black; margin-top:10px;" onclick="window.open('https://wa.me/94762664220')">🚀 BUY VIP KEY</button>
-            </div>
-
-            <div id="mainUI" style="display:none;">
-                <p id="roundsLeft" style="color:var(--neon); font-size:12px;">Signals Left: 0</p>
-                <button class="btn-prime" onclick="runAI()">GENERATE AI SIGNAL</button>
-                <div id="resArea" style="display:none;">
-                    <span id="sigOut">---</span>
-                    <p style="font-size:10px; color:gray;">AI CONFIDENCE: 96.4%</p>
-                </div>
+            
+            <div id="feedbackPrompt" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:10; border-radius:15px; flex-direction:column; justify-content:center; padding:10px;">
+                <p>CONFIRM LAST RESULT</p>
+                <button class="btn-prime btn-win" onclick="handleResult('win')">WIN ✅</button>
+                <button class="btn-prime btn-loss" style="margin-top:5px;" onclick="handleResult('loss')">LOSS ❌</button>
+                <button class="btn-prime" style="margin-top:5px; background:#444;" onclick="handleResult('miss')">MISSING ⚠️</button>
             </div>
         </div>
 
-        <div class="card">
-            <h3>MINING (FREE SIGNALS)</h3>
-            <input type="text" id="mInput" placeholder="Add Last Rounds (Ex: 1.25, 2.40)">
-            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD DATA</button>
-            <p style="font-size:11px; margin-top:10px;">Total Added: <span id="totalR">0</span></p>
+        <div id="lockSection">
+            <input type="text" id="vipKeyInput" placeholder="ENTER VIP KEY">
+            <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
+        </div>
+
+        <div id="unlockSection" style="display:none;">
+            <button class="btn-prime" id="genBtn" onclick="initiateSignal()">GENERATE SIGNAL</button>
+            <div id="platformSelect" style="display:none; margin-top:10px;">
+                <button class="btn-prime" onclick="setSite('1XBET')">1XBET</button>
+                <button class="btn-prime" style="margin-top:5px;" onclick="setSite('OTHER')">OTHER SITES</button>
+            </div>
+            <div id="dataEntry" style="display:none; margin-top:10px;">
+                <p style="font-size:11px;">Enter last 10 odds for accuracy:</p>
+                <input type="text" id="last10Input" placeholder="1.2, 2.5, 1.05...">
+                <button class="btn-prime" onclick="processAnalysis()">START ANALYSIS</button>
+            </div>
         </div>
     </div>
 
-    <div id="adminPanel" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:2000; padding:20px;">
-        <h2>ADMIN PANEL</h2>
-        <button class="btn-prime" onclick="genKey()">CREATE KEY</button>
-        <input type="text" id="kOut" readonly style="text-align:center;">
-        <input type="text" id="aMsg" placeholder="Global Message...">
-        <button class="btn-prime" onclick="sendB()">SEND BROADCAST</button>
-        <button class="btn-prime" onclick="document.getElementById('adminPanel').style.display='none'" style="background:#333;">CLOSE</button>
+    <div class="card">
+        <h3>PERFORMANCE</h3>
+        <select id="timeFilter" onchange="updateCharts()">
+            <option value="1h">Last 1 Hour</option>
+            <option value="2h">Last 2 Hours</option>
+            <option value="1d">1 Day</option>
+            <option value="1w">1 Week</option>
+            <option value="all">Lifetime</option>
+        </select>
+        <div class="stat-grid">
+            <div class="stat-item">Wins: <b id="winCount" style="color:var(--win)">0</b></div>
+            <div class="stat-item">Losses: <b id="lossCount" style="color:var(--loss)">0</b></div>
+        </div>
+        <div style="text-align:center; margin: 10px 0;">Win Rate: <h2 id="winRate" style="color:var(--neon); margin:0;">0%</h2></div>
+        <canvas id="mainChart" style="max-height: 150px;"></canvas>
+        <button class="btn-prime" style="margin-top:10px; font-size:10px;" onclick="openPage('growthPage')">VIEW GROWTH GRAPH</button>
     </div>
 
-    <p onclick="admin()" style="font-size:10px; color:#222; cursor:pointer; margin-top:50px;">- ADMIN -</p>
+    <div class="card">
+        <h3>SIGNAL MINING</h3>
+        <p style="font-size:10px;">10 ROUNDS DATA = 1 FREE SIGNAL</p>
+        <input type="text" id="mineInput" placeholder="Enter Past Round Odds">
+        <button class="btn-prime" style="background:var(--pink);" onclick="mineData()">MINE DATA</button>
+        <div id="miningStatus"></div>
+    </div>
 
-    <script>
-        const config = {
-            apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
-            authDomain: "nexus-ai-a5dd7.firebaseapp.com",
-            databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
-            projectId: "nexus-ai-a5dd7",
-            storageBucket: "nexus-ai-a5dd7.firebasestorage.app",
-            messagingSenderId: "754990038696",
-            appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
-        };
-        firebase.initializeApp(config);
-        const db = firebase.database();
+    <div class="card">
+        <h3>MONEY MANAGEMENT</h3>
+        <input type="number" id="capitalInput" placeholder="Enter Your Capital" oninput="calcBet()">
+        <div class="stat-grid">
+            <div class="stat-item">Bet 1 (Safe): <br><b id="bet1" style="color:var(--neon)">0.00</b></div>
+            <div class="stat-item">Bet 2 (Risk): <br><b id="bet2" style="color:var(--pink)">0.00</b></div>
+        </div>
+    </div>
+</div>
 
-        let rounds = 0, free = 0, vip = false;
+<div class="dashboard" style="margin-top: 15px;">
+    <button class="btn-prime" onclick="window.open('https://t.me/yourtelegram')">TELEGRAM CHAT</button>
+    <button class="btn-prime btn-gold" onclick="openPage('buyVipPage')">BUY VIP ACCESS</button>
+    <button class="btn-prime" style="background:#333;" onclick="openPage('howToBet')">HOW TO BET?</button>
+</div>
 
-        function mine() {
-            let v = document.getElementById('mInput').value;
-            if(!v) return;
-            rounds += v.split(',').length;
-            document.getElementById('totalR').innerText = rounds;
-            if(rounds >= 30) { free = 10; unlock(); }
-            document.getElementById('roundsLeft').innerText = "Signals Left: " + free;
-            document.getElementById('mInput').value = "";
-        }
+<div id="buyVipPage" class="overlay">
+    <h2>BUY VIP ACCESS</h2>
+    <div class="card">
+        <p>BOC: 93015029 (K.M.I.T. BANDARA)</p>
+        <p>SAMPATH: 120352053430 (G.M.D. JAYARATHNA)</p>
+        <input type="text" id="transId" placeholder="Transaction ID">
+        <button class="btn-prime btn-gold" onclick="submitPay()">SEND RECEIPT TO WHATSAPP</button>
+    </div>
+    <button class="btn-prime" onclick="closePages()" style="margin-top:20px;">BACK</button>
+</div>
 
-        function unlock() { document.getElementById('lockUI').style.display='none'; document.getElementById('mainUI').style.display='block'; }
+<div id="growthPage" class="overlay">
+    <h2>GROWTH ANALYSIS</h2>
+    <canvas id="growthChart"></canvas>
+    <button class="btn-prime" onclick="closePages()" style="margin-top:20px;">BACK</button>
+</div>
 
-        function runAI() {
-            if(!vip && free <= 0) return alert("Mine more data!");
-            document.getElementById('resArea').style.display = 'block';
-            document.getElementById('sigOut').innerText = (Math.random() * (9-5)+5).toFixed(2) + "x";
-            document.getElementById('fOverlay').style.display = 'flex';
-        }
+<div id="adminPanel" class="overlay">
+    <h2>ADMIN PANEL</h2>
+    <select id="keyType"><option value="1d">1 Day</option><option value="7d">7 Days</option><option value="1m">1 Month</option><option value="life">Lifetime</option></select>
+    <button class="btn-prime" onclick="createKey()">GENERATE VIP KEY</button>
+    <input type="text" id="keyOut" readonly>
+    <hr>
+    <input type="number" id="globalExp" placeholder="Global Key Hours">
+    <button class="btn-prime" onclick="createGlobalKey()">CREATE GLOBAL KEY</button>
+    <button class="btn-prime" onclick="closePages()" style="margin-top:20px;">CLOSE</button>
+</div>
 
-        function submitFeedback(res) {
-            if(!vip) free--;
-            document.getElementById('roundsLeft').innerText = "Signals Left: " + free;
-            document.getElementById('fOverlay').style.display = 'none';
-        }
+<audio id="winSound" src="https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3"></audio>
 
-        function verifyKey() {
-            let k = document.getElementById('vKeyInput').value;
-            db.ref('keys/'+k).once('value', s => {
-                if(s.exists()){ vip=true; unlock(); alert("VIP Active!"); } else alert("Invalid!");
-            });
-        }
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
+        authDomain: "nexus-ai-a5dd7.firebaseapp.com",
+        databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
+        projectId: "nexus-ai-a5dd7",
+        storageBucket: "nexus-ai-a5dd7.firebasestorage.app",
+        messagingSenderId: "754990038696",
+        appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-        db.ref('broadcast').on('value', s => {
-            if(s.val()){ document.getElementById('broadcastArea').innerText = "📢 " + s.val(); document.getElementById('broadcastArea').style.display='block'; }
+    let isVip = false;
+    let freeSignals = 0;
+    let currentSite = "";
+    let stats = { win: 0, loss: 0, history: [] };
+    let mainChart, growthChart;
+
+    // Load Local Data
+    if(localStorage.getItem('nexus_stats')) stats = JSON.parse(localStorage.getItem('nexus_stats'));
+
+    // Initialize Charts
+    function initCharts() {
+        const ctx = document.getElementById('mainChart').getContext('2d');
+        mainChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels: ['Win', 'Loss'], datasets: [{ data: [stats.win, stats.loss], backgroundColor: ['#00ff80', '#ff3e3e'] }] },
+            options: { plugins: { legend: { display: false } } }
         });
+    }
 
-        function admin() { if(prompt("Pass:") === "nexus77") document.getElementById('adminPanel').style.display='block'; }
-        function genKey() { let k = "NX-" + Math.random().toString(36).substr(2,8).toUpperCase(); db.ref('keys/'+k).set(true); document.getElementById('kOut').value = k; }
-        function sendB() { db.ref('broadcast').set(document.getElementById('aMsg').value); }
-        function rate(n) { let s = document.getElementById('stars').children; for(let i=0; i<5; i++) s[i].className = i<n?'star active':'star'; }
-    </script>
-</body>
-</html>
+    // Signal Logic
+    function initiateSignal() {
+        document.getElementById('platformSelect').style.display = 'block';
+        document.getElementById('genBtn').style.display = 'none';
+    }
+
+    function setSite(s) {
+        currentSite = s;
+        document.getElementById('platformSelect').style.display = 'none';
+        document.getElementById('dataEntry').style.display = 'block';
+    }
+
+    function processAnalysis() {
+        const input = document.getElementById('last10Input').value;
+        if(input.split(',').length < 10) {
+            alert("ENTER 10 PAST ODDS FOR GOOD RESULTS!");
+            return;
+        }
+        
+        document.getElementById('dataEntry').style.display = 'none';
+        document.getElementById('loadingAnim').style.display = 'block';
+        document.getElementById('sigDisplayArea').style.display = 'none';
+
+        setTimeout(() => {
+            const result = generateLogic(input);
+            document.getElementById('loadingAnim').style.display = 'none';
+            document.getElementById('sigDisplayArea').style.display = 'block';
+            document.getElementById('sigValue').innerText = result + "x";
+            document.getElementById('sigSubText').innerText = "AI PREDICTION FOR " + currentSite;
+            document.getElementById('feedbackPrompt').style.display = 'flex';
+        }, 2000);
+    }
+
+    function generateLogic(input) {
+        const odds = input.split(',').map(Number);
+        const avg = odds.reduce((a, b) => a + b, 0) / odds.length;
+        
+        // Complex AI Pattern Recognition
+        if(avg < 1.5) {
+            document.getElementById('sigMainBox').style.borderColor = 'var(--win)';
+            return (Math.random() * (4.5 - 2.1) + 2.1).toFixed(2);
+        } else if(avg > 5) {
+            document.getElementById('sigMainBox').style.borderColor = 'var(--loss)';
+            return (Math.random() * (1.9 - 1.1) + 1.1).toFixed(2);
+        } else {
+            return (Math.random() * (9.5 - 5.1) + 5.1).toFixed(2);
+        }
+    }
+
+    function handleResult(res) {
+        if(res === 'win') stats.win++;
+        if(res === 'loss') stats.loss++;
+        stats.history.push({res, time: Date.now()});
+        localStorage.setItem('nexus_stats', JSON.stringify(stats));
+        
+        document.getElementById('feedbackPrompt').style.display = 'none';
+        document.getElementById('genBtn').style.display = 'block';
+        updateCharts();
+    }
+
+    function updateCharts() {
+        document.getElementById('winCount').innerText = stats.win;
+        document.getElementById('lossCount').innerText = stats.loss;
+        const total = stats.win + stats.loss;
+        const rate = total > 0 ? ((stats.win / total) * 100).toFixed(1) : 0;
+        document.getElementById('winRate').innerText = rate + "%";
+        
+        mainChart.data.datasets[0].data = [stats.win, stats.loss];
+        mainChart.update();
+    }
+
+    function mineData() {
+        const val = document.getElementById('mineInput').value;
+        if(val.split(',').length >= 10) {
+            freeSignals++;
+            document.getElementById('winSound').play();
+            alert("CONGRATULATIONS! UNLOCKED 1 FREE SIGNAL");
+            unlockSignalUI();
+        }
+        document.getElementById('mineInput').value = "";
+    }
+
+    function unlockSignalUI() {
+        document.getElementById('lockSection').style.display = 'none';
+        document.getElementById('unlockSection').style.display = 'block';
+        document.getElementById('roundsLeft').innerText = "Signals Left: " + (isVip ? "UNLIMITED" : freeSignals);
+    }
+
+    function verifyKey() {
+        const key = document.getElementById('vipKeyInput').value;
+        db.ref('keys/' + key).once('value', snap => {
+            if(snap.exists()) {
+                isVip = true;
+                unlockSignalUI();
+                document.getElementById('vipStatus').innerText = "VIP ACTIVE";
+                showCongrats();
+            } else {
+                alert("INVALID KEY!");
+            }
+        });
+    }
+
+    function showCongrats() {
+        const div = document.createElement('div');
+        div.className = "congrats";
+        div.innerHTML = "⭐ CONGRATULATIONS! VIP UNLOCKED ⭐";
+        document.body.prepend(div);
+        setTimeout(() => div.remove(), 3000);
+    }
+
+    function calcBet() {
+        const cap = document.getElementById('capitalInput').value;
+        document.getElementById('bet1').innerText = (cap / 20).toFixed(2);
+        document.getElementById('bet2').innerText = (cap / 50).toFixed(2);
+    }
+
+    function openPage(id) { document.getElementById(id).classList.add('active'); }
+    function closePages() { document.querySelectorAll('.overlay').forEach(p => p.classList.remove('active')); }
+    
+    function submitPay() {
+        const id = document.getElementById('transId').value;
+        window.open(`https://wa.me/94762664220?text=Payment Done. ID: ${id}`);
+    }
+
+    // Admin Functions
+    function admin() { if(prompt("Admin Pass:") === "nexus77") openPage('adminPanel'); }
+    function createKey() {
+        const k = "NX-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+        db.ref('keys/' + k).set({ type: document.getElementById('keyType').value });
+        document.getElementById('keyOut
