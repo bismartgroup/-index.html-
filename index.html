@@ -192,9 +192,7 @@ function submitRes(r) {
             if(s.exists()) { vip = true; unlock(); alert("VIP Active!"); }
             else alert("Invalid Key!");
         });
-    }
-    // මේ කොටස </script> ලකුණට හරියටම ඉහළින් දාන්න
-function calculateBets() {
+    function calculateBets() {
     let capital = document.getElementById('capitalInput').value;
     let b1 = document.getElementById('bet1Display');
     let b2 = document.getElementById('bet2Display');
@@ -212,6 +210,7 @@ function calculateBets() {
 </script>
 </body>
 </html>
+
 
 
 
