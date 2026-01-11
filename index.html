@@ -3,54 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ULTIMATE V16</title>
+    <title>NEXUS AI | V15.2 MODIFIED</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    
     <style>
-        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; --pink: #ff00ff; --win: #00ff80; --loss: #ff3e3e; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 10px; text-align: center; }
-        .container { max-width: 600px; margin: auto; }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; transition: 0.3s; }
-        .btn-prime { background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; }
-        .btn-gold { background: var(--vip); color: black; }
-        input, select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); box-sizing: border-box; margin-bottom: 10px; }
-        
-        /* Signal UI */
-        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 130px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
-        #sigOut { font-size: 50px; font-weight: bold; color: var(--neon); text-shadow: 0 0 15px var(--neon); }
-        .feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
-        
-        /* Stats Display */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 13px; }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
+        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; }
+        body { background: var(--bg); color: white; font-family: sans-serif; padding: 10px; text-align: center; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; position: relative; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
+        .btn-prime { background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; }
+        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 30px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        #sigVal { font-size: 50px; font-weight: bold; color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+        .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
+        input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1 style="color:var(--neon); margin:10px 0; font-size: 24px;">NEXUS AI <span style="color:var(--vip);">MASTER V16</span></h1>
-    <div id="uCount" style="font-size:11px; color:#888; margin-bottom:15px;">Connecting to secure server...</div>
+    <h1 style="color:var(--neon);">NEXUS AI <span style="color:var(--vip);">V15.2 MOD</span></h1>
 
-    <div class="card">
-        <div class="feedback-overlay" id="fOverlay">
-            <h3 style="margin-bottom:15px;">CONFIRM LAST RESULT</h3>
-            <button class="btn" style="background:var(--win); color:black;" onclick="handleResult('win')">WIN ✅</button>
-            <button class="btn" style="background:var(--loss); color:white;" onclick="handleResult('loss')">LOSS ❌</button>
+    <div style="max-width:500px; margin:auto;">
+        <div class="card">
+            <div class="f-overlay" id="fOverlay">
+                <p>CONFIRM LAST RESULT</p>
+                <button class="btn" style="background:var(--win); color:black;" onclick="submitRes('win')">WIN ✅</button>
+                <button class="btn" style="background:var(--loss); color:white;" onclick="submitRes('loss')">LOSS ❌</button>
+            </div>
+
+            <div class="signal-box">
+                <div id="sampleArea">
+                    <span id="sampleOdds" style="font-size:40px; color:#333;">1.00x</span>
+                    <div style="font-size:10px; color:var(--loss);">SAMPLE DATA</div>
+                </div>
+                <div id="realSigArea" style="display:none;">
+                    <span id="sigVal">---</span>
+                    <div style="font-size:11px; color:var(--win);">ANALYSIS ACTIVE</div>
+                </div>
+            </div>
+
+            <div id="lockUI">
+                <input type="text" id="vKey" placeholder="ENTER VIP KEY">
+                <button class="btn btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
+            </div>
+
+            <div id="unlockUI" style="display:none;">
+                <p id="sLeft" style="font-size:12px; color:var(--vip);">Signals: 0</p>
+                <button class="btn btn-prime" id="genBtn" onclick="generate()">GENERATE SIGNAL</button>
+            </div>
         </div>
 
-        <div class="signal-box">
-            <div id="sampleArea">
-                <span id="sampleVal" style="font-size:40px; color:#333;">1.00x</span>
-                <div style="font-size:10px; color:var(--loss);">SAMPLE DATA - DONT BET</div>
-            </div>
-            <div id="realSigArea" style="display:none;">
-                <span id="sigOut">---</span>
-                <div id="aiStatus" style="font-size:12px; color:var(--win);">AI ANALYZING...</div>
-            </div>
+        <div class="card">
+            <h3>MINING DATA</h3>
+            <input type="text" id="mIn" placeholder="Ex: 1.25, 4.2">
+            <button class="btn" style="background:#ff00ff; color:white;" onclick="mine()">ADD DATA</button>
+            <p style="font-size:11px;">Rounds Added: <b id="tR">0</b></p>
         </div>
+    </div>
 
-        <div id="lockUI">
-            <input type="text" id="vKey" placeholder="ENTER
+<script>
+    // Firebase Config (ඔබේ දත්ත ඇතුළත් කරන්න)
+    const firebaseConfig = {
+        apiKey: "
