@@ -56,4 +56,123 @@
     <div class="card" id="engineCard">
         <div class="feedback-overlay" id="fOverlay">
             <h3>RATE & CONFIRM</h3>
-            <div id="stars"><span class="star-rating" onclick="rate(1)">★</span><span class="star-rating" onclick="rate(2)">★</span><span class="star-rating" onclick="rate(3)">★</span><span class="star-rating" onclick="rate(4)">★</span><span class="star-rating" onclick
+            <div id="stars"><span class="star-rating" onclick="rate(1)">★</span><span class="star-rating" onclick="rate(2)">★</span><span class="star-rating" onclick="rate(3)">★</span><span class="star-rating" onclick="rate(4)">★</span><span class="star-rating" onclick="rate(5)">★</span></div>
+            <button class="btn-prime" style="background:#00ff80; margin-top:15px;" onclick="submitFeedback('win')">WIN ✅</button>
+            <button class="btn-prime" style="background:#ff3e3e; margin-top:5px;" onclick="submitFeedback('loss')">LOSS ❌</button>
+        </div>
+        <div id="statusBadge" style="position:absolute; top:15px; right:15px; font-size:10px; color:var(--vip);">LOCKED</div>
+        <h3>SIGNAL ENGINE</h3>
+        <input type="text" id="vipKeyInput" placeholder="ENTER VIP KEY">
+        <button class="btn-prime" style="margin-bottom:15px;" onclick="verifyKey()">ACTIVATE VIP</button>
+        <div id="lockUI" style="text-align:center;"><button class="btn-prime btn-gold" onclick="document.getElementById('pricingPage').style.display='block'">🚀 UNLOCK SIGNALS</button></div>
+        
+        <div id="mainUI" style="display:none; text-align:center;">
+            <p id="roundsLeft" style="color:var(--neon); font-size:12px;">Signals Left: 0</p>
+            <button class="btn-prime" onclick="runAI()">GENERATE SIGNAL</button>
+            <div id="resArea" style="display:none; margin-top:20px;">
+                <h2 id="sigOut" style="font-size:50px; color:var(--neon); margin:0;">---</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>GLOBAL STATS</h3>
+        <canvas id="liveChart" style="max-height:150px;"></canvas>
+        <div style="display:flex; justify-content:space-between; font-size:12px; margin-top:10px;">
+            <span style="color:#00ff80;">Wins: <b id="winT">0</b></span>
+            <span style="color:#ff3e3e;">Losses: <b id="lossT">0</b></span>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>SIGNAL MINING</h3>
+        <input type="text" id="miningInput" placeholder="Add Last Rounds (Ex: 1.25, 2.40)">
+        <button class="btn-prime" style="background:var(--pink);" onclick="mineData()">ADD DATA</button>
+        <p style="text-align:center; font-size:11px; margin-top:10px;">Total Rounds Added: <span id="totalR" style="color:var(--neon)">0</span></p>
+    </div>
+</div>
+
+<p onclick="showAdmin()" style="text-align:center; font-size:10px; color:#222; cursor:pointer; margin-top:40px;">- ADMIN AREA -</p>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
+        authDomain: "nexus-ai-a5dd7.firebaseapp.com",
+        databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
+        projectId: "nexus-ai-a5dd7",
+        storageBucket: "nexus-ai-a5dd7.firebasestorage.app",
+        messagingSenderId: "754990038696",
+        appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let rounds = 0; let freeCount = 0; let isVip = false;
+
+    const ctx = document.getElementById('liveChart').getContext('2d');
+    let chart = new Chart(ctx, { type: 'doughnut', data: { datasets: [{ data: [1, 1], backgroundColor: ['#00ff80', '#ff3e3e'] }] }, options: { cutout: '80%' } });
+
+    function mineData() {
+        let val = document.getElementById('miningInput').value;
+        if(!val) return;
+        rounds += val.split(',').length;
+        document.getElementById('totalR').innerText = rounds;
+
+        if(rounds >= 1000) freeCount = 30;
+        else if(rounds >= 50) freeCount = 15;
+        else if(rounds >= 30) freeCount = 10;
+
+        if(freeCount > 0) unlock();
+        document.getElementById('roundsLeft').innerText = `Signals Left: ${freeCount}`;
+        document.getElementById('miningInput').value = "";
+    }
+
+    function unlock() {
+        document.getElementById('lockUI').style.display = 'none';
+        document.getElementById('mainUI').style.display = 'block';
+        document.getElementById('statusBadge').innerText = "UNLOCKED";
+    }
+
+    function runAI() {
+        if(!isVip && freeCount <= 0) return alert("Unlock more signals!");
+        document.getElementById('resArea').style.display = 'block';
+        document.getElementById('sigOut').innerText = (Math.random() * (9.5 - 5.0) + 5.0).toFixed(2) + "x";
+        document.getElementById('fOverlay').style.display = 'flex';
+    }
+
+    function submitFeedback(res) {
+        if(!isVip) freeCount--;
+        document.getElementById('roundsLeft').innerText = `Signals Left: ${freeCount}`;
+        document.getElementById('fOverlay').style.display = 'none';
+        document.getElementById('resArea').style.display = 'none';
+        db.ref('stats').once('value', s => {
+            let d = s.val() || {w:50, l:5};
+            if(res==='win') d.w++; else d.l++;
+            db.ref('stats').set(d);
+        });
+    }
+
+    function verifyKey() {
+        let k = document.getElementById('vipKeyInput').value;
+        db.ref('keys/'+k).once('value', s => {
+            if(s.exists()){ isVip=true; unlock(); document.getElementById('statusBadge').innerText = "VIP ACTIVE"; alert("VIP Activated!"); }
+        });
+    }
+
+    db.ref('stats').on('value', s => {
+        let d = s.val() || {w:50, l:5};
+        document.getElementById('winT').innerText = d.w; document.getElementById('lossT').innerText = d.l;
+        chart.data.datasets[0].data = [d.w, d.l]; chart.update();
+    });
+
+    db.ref('broadcast').on('value', snap => {
+        if(snap.val()) { document.getElementById('broadcastArea').innerText = "📢 " + snap.val(); document.getElementById('broadcastArea').style.display = "block"; }
+    });
+
+    function showAdmin() { if(prompt("Pass:") === "nexus77") document.getElementById('adminPanel').style.display = "block"; }
+    function generateKey() { let k = "NX-" + Math.random().toString(36).substr(2, 8).toUpperCase(); db.ref('keys/'+k).set(true); document.getElementById('genKeyDisplay').value = k; }
+    function sendBroadcast() { db.ref('broadcast').set(document.getElementById('adminMsg').value); alert("Sent!"); }
+    function rate(n) { let s = document.getElementById('stars').children; for(let i=0; i<5; i++) s[i].style.color = i<n?'gold':'gray'; }
+</script>
+</body>
+</html>
