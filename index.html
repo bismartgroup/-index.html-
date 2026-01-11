@@ -3,103 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ENTERPRISE V15.2</title>
+    <title>NEXUS AI | ENTERPRISE V15.2 FIXED</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;600&display=swap" rel="stylesheet">
     <style>
         :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --admin: #7000ff; --pink: #ff00ff; --win: #00ff80; --loss: #ff3e3e; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; }
-        .dashboard { max-width: 1200px; margin: auto; display: block; }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 20px; position: relative; margin-bottom: 20px; text-align: left; }
-        h1, h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 2px; text-align: center; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-gold { background: linear-gradient(45deg, #bf953f, #fcf6ba, #aa771c); color: black; }
-        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 30px; margin: 15px 0; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; text-align: center; }
-        #sampleOdds { font-size: 55px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); }
-        .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.98); z-index: 2000; padding: 20px; box-sizing: border-box; overflow-y: auto; }
-        .feedback-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; }
+        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, var(--admin), var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 30px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+        #sigVal { font-size: 60px; font-weight: 900; color: var(--win); text-shadow: 0 0 20px var(--win); }
+        .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
         input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
-<div style="display:flex; justify-content: space-between; padding: 10px; font-size: 12px; background: rgba(0,0,0,0.5); border-radius: 10px; margin-bottom: 15px;">
-    <span>Online: <b id="userCount">...</b></span>
-    <span id="vipStatus" style="color:var(--vip);">LOCKED</span>
-</div>
+    <h1 style="color:var(--neon); font-family: 'Orbitron';">NEXUS AI <span style="color:var(--vip);">V15.2</span></h1>
 
-<div class="dashboard">
-    <div class="card">
-        <h3>SIGNAL ENGINE</h3>
-       <div class="signal-box">
-    <div id="sampleArea">
-        <span id="sampleOdds" style="font-size:45px; font-weight:bold; color:var(--neon);">1.00x</span>
-        <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
-    </div>
-
-    <div id="realSigArea" style="display:none; text-align:center;">
-        <span id="sigVal" style="font-size:60px; font-weight:900; color:var(--win); text-shadow: 0 0 20px var(--win);">---</span>
-        <p style="font-size:12px; color:var(--win); margin-top:5px;">AI PREDICTED SIGNAL</p>
-    </div>
-</div>
-
-    <div id="realSigArea" style="display:none; text-align:center;">
-        <span id="sigVal" style="font-size:60px; font-weight:900; color:var(--win); text-shadow: 0 0 20px var(--win);">---</span>
-        <p style="font-size:12px; color:var(--win); margin-top:5px;">AI PREDICTED SIGNAL</p>
-    </div>
-</div>
-
-            <div id="realSigArea" style="display:none;">
-                <h2 id="sigValue" style="font-size:60px; margin:0; color:var(--win);">---</h2>
-                <p id="mStatus" style="font-size:12px; color:var(--neon);">AI ANALYSIS</p>
-            </div>
-
-            <div class="feedback-overlay" id="fOverlay">
+    <div style="max-width:500px; margin:auto;">
+        <div class="card">
+            <div class="f-overlay" id="fOverlay">
                 <p>CONFIRM RESULT</p>
-                <button class="btn-prime" style="background:var(--win); color:black;" onclick="handleRes('win')">WIN ✅</button>
-                <button class="btn-prime" style="background:var(--loss); margin-top:5px;" onclick="handleRes('loss')">LOSS ❌</button>
-                <button class="btn-prime" style="background:#444; margin-top:5px;" onclick="handleRes('miss')">MISS ⚠️</button>
+                <button class="btn-prime" style="background:var(--win); color:black;" onclick="submitRes('win')">WIN ✅</button>
+                <button class="btn-prime" style="background:var(--loss);" onclick="submitRes('loss')">LOSS ❌</button>
+            </div>
+
+            <div class="signal-box">
+                <div id="sampleArea">
+                    <span id="sampleOdds" style="font-size:40px; color:#333;">1.00x</span>
+                    <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
+                </div>
+                <div id="realSigArea" style="display:none;">
+                    <span id="sigVal">---</span>
+                </div>
+            </div>
+
+            <div id="lockUI">
+                <input type="text" id="vKey" placeholder="ENTER VIP KEY">
+                <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
+            </div>
+
+            <div id="unlockUI" style="display:none;">
+                <p id="sLeft" style="color:var(--vip);">Signals: 0</p>
+                <button class="btn-prime" id="genBtn" onclick="genSig()">GENERATE SIGNAL</button>
             </div>
         </div>
 
-        <div id="lockUI">
-            <input type="text" id="vKey" placeholder="ENTER VIP KEY">
-            <button class="btn-prime" onclick="verify()">ACTIVATE VIP</button>
-            <button class="btn-prime btn-gold" style="margin-top:10px;" onclick="document.getElementById('pricing').style.display='block'">🚀 BUY VIP KEY</button>
-        </div>
-
-        <div id="unlockUI" style="display:none; text-align:center;">
-            <p id="sLeft" style="color:var(--vip); font-size:12px;"></p>
-            <button class="btn-prime" onclick="genSig()">GENERATE SIGNAL</button>
+        <div class="card">
+            <h3>SIGNAL MINING</h3>
+            <p style="font-size:11px; color:#666;">10 Rounds = 1 Free Signal</p>
+            <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.2, 5.4)">
+            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD DATA</button>
+            <p style="margin-top:10px; font-size:12px;">Total Added: <span id="tRounds" style="color:var(--neon)">0</span></p>
         </div>
     </div>
-
-  <div class="card">
-    <h3>FREE SIGNAL MINING</h3>
-    <p style="font-size:11px; color:#666;">10 Rounds = 1 Free Signal</p>
-    
-    <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.2, 5.4)">
-    
-    <button class="btn-prime" style="background:#ff00ff;" onclick="mine()">ADD DATA</button>
-    
-    <p style="text-align:center; font-size:11px; margin-top:10px;">Total Added: <span id="tRounds">0</span></p>
-</div>
-<div id="pricing" class="overlay">
-    <h2>VIP PACKAGES</h2>
-    <div class="card">
-        <p>BOC: 93015029 | Commercial: 8080031546</p>
-        <p>1 Day: 1000 | 7 Day: 2000 | 1 Month: 5000</p>
-        <button class="btn-prime btn-gold" onclick="window.open('https://wa.me/94762664220')">WHATSAPP RECEIPT</button>
-    </div>
-    <button class="btn-prime" onclick="document.getElementById('pricing').style.display='none'" style="margin-top:20px;">BACK</button>
-</div>
-
-<p onclick="admin()" style="text-align:center; font-size:10px; color:#222; cursor:pointer; margin-top:50px;">- ADMINISTRATION -</p>
 
 <script>
-    const config = {
+    // Firebase Config (ඔබේ Firebase දත්ත මෙතන තියෙනවා)
+    const firebaseConfig = {
         apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
         authDomain: "nexus-ai-a5dd7.firebaseapp.com",
         databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
@@ -108,89 +72,78 @@
         messagingSenderId: "754990038696",
         appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
     };
-    firebase.initializeApp(config);
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let rounds = 0, free = 0, vip = false;
-    const samples = ["1.20x", "3.99x", "5.89x", "20.56x", "50.65x", "100.65x"];
+    // Variables (මේවා නිවැරදිව Define කර ඇත)
+    let rounds = 0; 
+    let free = 0; 
+    let vip = false;
+    const samples = ["1.20x", "3.99x", "5.89x", "20.56x", "50.65x"];
     let sIdx = 0;
 
-    // Auto Play Samples Fix
+    // Auto Play Samples
     setInterval(() => {
-        const sampleEl = document.getElementById('sampleOdds');
-        if(sampleEl && document.getElementById('sampleArea').style.display !== 'none') {
-            sampleEl.innerText = samples[sIdx];
+        if(document.getElementById('sampleArea').style.display !== 'none') {
+            document.getElementById('sampleOdds').innerText = samples[sIdx];
             sIdx = (sIdx + 1) % samples.length;
         }
     }, 1500);
 
+    // 1. ROUND ADD WENA KOTASA (Fixed)
     function mine() {
-    let v = document.getElementById('mInput').value;
-    if(!v || v.trim() === "") return;
+        let input = document.getElementById('mInput');
+        if(!input.value) return alert("Please enter odds!");
 
-    // කොමා වලින් වෙන් කර ඇති අංක ගණන් කිරීම
-    let newRounds = v.split(',').filter(n => n.trim() !== "").length;
-    
-    // දැනට ඇති rounds ගණනට අලුත් ඒවා එකතු කිරීම
-    rounds += newRounds;
-    
-    // තිරය මත අගයන් යාවත්කාලීන කිරීම
-    document.getElementById('tRounds').innerText = rounds;
-    
-    // සෑම වට 10 කටම එක සිග්නල් එකක් ලබා දීම
-    free = Math.floor(rounds / 10);
-    
-    if(free > 0) unlock();
-    
-    document.getElementById('sLeft').innerText = "Signals Left: " + free;
-    document.getElementById('mInput').value = ""; // Input එක හිස් කිරීම
-}
-
-    function unlock() { document.getElementById('lockUI').style.display='none'; document.getElementById('unlockUI').style.display='block'; }
-
-   
-    // තත්පර 1.5කට පසු Win/Loss තෝරන මෙනුව පෙන්වනවා
-    setTimeout(()  function genSig() // මේ කොටස පේස්ට් කරන්න (පරණ genSig එක වෙනුවට)
-function genSig() {
-    // සිග්නල් ඉතිරිව තිබේදැයි බලනවා
-    if(!vip && free <= 0) return alert("Mine data first!");
-
-    // බොත්තම එබූ සැනින් සාම්පල අංක වසා, සිග්නල් පෙන්වන තැන විවෘත කරයි
-    document.getElementById('sampleArea').style.display = 'none';
-    document.getElementById('realSigArea').style.display = 'block';
-
-    // අහඹු සිග්නල් එකක් හදනවා
-    let predictedOdds = (Math.random() * (9.5 - 5.0) + 5.0).toFixed(2);
-    
-    // එම අගය තිරයේ පෙන්වනවා
-    document.getElementById('sigVal').innerText = predictedOdds + "x";
-
-    // තත්පර 1.5කට පසු Win/Loss මෙනුව පෙන්වනවා
-    setTimeout(() => {
-        document.getElementById('fOverlay').style.display = 'flex';
-    }, 1500);
-}
-
-    function handleRes(r) {
-        if(!vip) free--;
+        let newEntries = input.value.split(',').filter(n => n.trim() !== "");
+        rounds += newEntries.length; // Round එකතු වෙනවා
+        
+        document.getElementById('tRounds').innerText = rounds; // තිරය මත පෙන්වනවා
+        
+        free = Math.floor(rounds / 10); // සිග්නල් ගණනය කිරීම
+        
+        if(free > 0) unlock();
         document.getElementById('sLeft').innerText = "Signals Left: " + free;
-        document.getElementById('fOverlay').style.display='none';
-        document.getElementById('realSigArea').style.display='none';
-        document.getElementById('sampleArea').style.display='block';
+        input.value = ""; // Input එක හිස් කරනවා
     }
 
-    function verify() {
-        let k = document.getElementById('vKey').value;
-        db.ref('keys/'+k).once('value', s => {
-            if(s.exists()){ vip=true; unlock(); document.getElementById('vipStatus').innerText="VIP ACTIVE"; alert("VIP UNLOCKED!"); }
+    function unlock() {
+        document.getElementById('lockUI').style.display = 'none';
+        document.getElementById('unlockUI').style.display = 'block';
+    }
+
+    // 2. SIGNAL LOKUWATA PENWANA KOTASA (Fixed)
+    function genSig() {
+        if(!vip && free <= 0) return alert("Mine data first!");
+        
+        document.getElementById('sampleArea').style.display = 'none';
+        document.getElementById('realSigArea').style.display = 'block';
+        
+        let res = (Math.random() * (9.5 - 5.0) + 5.0).toFixed(2);
+        document.getElementById('sigVal').innerText = res + "x";
+        
+        setTimeout(() => {
+            document.getElementById('fOverlay').style.display = 'flex';
+            document.getElementById('genBtn').style.display = 'none';
+        }, 1500);
+    }
+
+    function submitRes(r) {
+        if(!vip) free--;
+        document.getElementById('sLeft').innerText = "Signals Left: " + free;
+        document.getElementById('fOverlay').style.display = 'none';
+        document.getElementById('realSigArea').style.display = 'none';
+        document.getElementById('sampleArea').style.display = 'block';
+        document.getElementById('genBtn').style.display = 'block';
+    }
+
+    function verifyKey() {
+        let key = document.getElementById('vKey').value;
+        db.ref('keys/' + key).once('value', s => {
+            if(s.exists()) { vip = true; unlock(); alert("VIP Active!"); }
             else alert("Invalid Key!");
         });
     }
-
-    function admin() { if(prompt("Pass:") === "nexus77") alert("Admin logged via console (Ready for more features)"); }
-    setInterval(() => { document.getElementById('userCount').innerText = Math.floor(Math.random() * (150 - 80) + 80); }, 3000);
 </script>
 </body>
 </html>
-
-
