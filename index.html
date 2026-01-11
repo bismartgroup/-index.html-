@@ -113,29 +113,41 @@
     }
 
     // 2. SIGNAL LOKUWATA PENWANA KOTASA (Fixed)
-    function genSig() {
-        if(!vip && free <= 0) return alert("Mine data first!");
+  function genSig() {
+    // 1. සිග්නල් ඉතිරිව ඇත්දැයි බැලීම
+    if(!vip && free <= 0) return alert("Mine 10 rounds to get a free signal!");
+
+    // 2. VIP නොවේ නම් වට 10ක් අඩු කිරීමේ logic එක
+    if(!vip) {
+        rounds = rounds - 10; // මුළු වට ප්‍රමාණයෙන් 10ක් අඩු කරයි
+        if(rounds < 0) rounds = 0; // වට ප්‍රමාණය 0ට වඩා අඩු නොවීමට
         
-        document.getElementById('sampleArea').style.display = 'none';
-        document.getElementById('realSigArea').style.display = 'block';
-        
-        let res = (Math.random() * (9.5 - 5.0) + 5.0).toFixed(2);
-        document.getElementById('sigVal').innerText = res + "x";
-        
-        setTimeout(() => {
-            document.getElementById('fOverlay').style.display = 'flex';
-            document.getElementById('genBtn').style.display = 'none';
-        }, 1500);
+        document.getElementById('tRounds').innerText = rounds; // තිරය මත අගය අඩු කරයි
     }
 
-    function submitRes(r) {
-        if(!vip) free--;
-        document.getElementById('sLeft').innerText = "Signals Left: " + free;
-        document.getElementById('fOverlay').style.display = 'none';
-        document.getElementById('realSigArea').style.display = 'none';
-        document.getElementById('sampleArea').style.display = 'block';
-        document.getElementById('genBtn').style.display = 'block';
-    }
+    // 3. සිග්නල් එක පෙන්වීම
+    document.getElementById('sampleArea').style.display = 'none';
+    document.getElementById('realSigArea').style.display = 'block';
+    
+    let res = (Math.random() * (9.5 - 5.0) + 5.0).toFixed(2);
+    document.getElementById('sigVal').innerText = res + "x";
+    
+    // 4. Feedback මෙනුව පෙන්වීම
+    setTimeout(() => {
+        document.getElementById('fOverlay').style.display = 'flex';
+        document.getElementById('genBtn').style.display = 'none';
+    }, 1500);
+function submitRes(r) {
+    // ඉතිරිව ඇති සිග්නල් ගණන නැවත ගණනය කිරීම
+    free = Math.floor(rounds / 10);
+    document.getElementById('sLeft').innerText = "Signals Left: " + free;
+
+    // Reset UI
+    document.getElementById('fOverlay').style.display = 'none';
+    document.getElementById('realSigArea').style.display = 'none';
+    document.getElementById('sampleArea').style.display = 'block';
+    document.getElementById('genBtn').style.display = 'block';
+}
 
     function verifyKey() {
         let key = document.getElementById('vKey').value;
@@ -147,3 +159,4 @@
 </script>
 </body>
 </html>
+
