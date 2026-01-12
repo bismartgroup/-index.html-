@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | SMART SEQUENCE V15.2</title>
+    <title>NEXUS AI | ULTIMATE V15.2 FULL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -29,7 +29,7 @@
         .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
 
-        .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
+        .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; padding: 20px; box-sizing: border-box; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid #1a1e26; }
 
@@ -43,6 +43,7 @@
 <body>
 
     <h1 style="color:var(--neon);">NEXUS AI <span style="color:var(--vip);">V15.2</span></h1>
+    
     <div id="displayMsg" class="global-msg"></div>
 
     <div class="support-grid" style="max-width:500px; margin: 0 auto 15px auto;">
@@ -59,22 +60,21 @@
             <div class="stat-box">Real Win Rate: <b id="wRate" style="color:var(--win);">0%</b></div>
         </div>
 
-        <div class="live-scroll" id="liveFeeder">System ready for data...</div>
+        <div class="live-scroll" id="liveFeeder">System standby...</div>
 
         <div class="card">
             <div class="f-overlay" id="fOverlay">
-                <h3 style="margin:0 0 10px 0;">ADD PREVIOUS RESULT</h3>
-                <p style="font-size: 10px; color: #aaa;">To unlock next signal, enter last round odd</p>
-                <input type="number" id="lastRoundInput" placeholder="Ex: 1.45, 2.30" step="0.01">
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <button class="btn-prime" style="background:var(--win); color:black;" onclick="submitRes('win')">WIN ✅</button>
-                    <button class="btn-prime" style="background:var(--loss);" onclick="submitRes('loss')">LOSS ❌</button>
+                <h3 style="margin-bottom:10px;">ADD LAST ROUND</h3>
+                <input type="number" id="lastRoundInput" placeholder="Enter last round odd (Ex: 1.50)" step="0.01">
+                <div style="display:flex; gap:10px; width:100%;">
+                    <button class="btn-prime" style="background:var(--win); color:black; margin:0;" onclick="submitRes('win')">WIN ✅</button>
+                    <button class="btn-prime" style="background:var(--loss); margin:0;" onclick="submitRes('loss')">LOSS ❌</button>
                 </div>
             </div>
 
             <div class="signal-box">
                 <div id="sampleArea">
-                    <p id="sampleOdds">1.00x</p>
+                    <p id="sampleOdds">1.50x</p>
                     <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
                 </div>
                 <div id="realSigArea" style="display:none;">
@@ -135,7 +135,7 @@
             <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN CONTROL</h3>
             <input type="text" id="adminMsg" placeholder="Broadcast Message">
             <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE MESSAGE</button>
-            <p style="font-size: 12px; margin-top: 15px;">🔑 Key Gen:</p>
+            <p style="font-size: 12px; margin-top: 15px;">🔑 Key Generator:</p>
             <select id="keyDuration">
                 <option value="1">1 Day</option>
                 <option value="7">7 Days</option>
@@ -148,6 +148,7 @@
     </div>
 
     <script>
+        // 1. Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
             authDomain: "nexus-ai-a5dd7.firebaseapp.com",
@@ -160,15 +161,17 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let rounds = 0; let free = 0; let vip = false; let platform = "1XBET";
+        // 2. Global Variables
+        let rounds = 0, free = 0, vip = false, plat = "1XBET";
         let history = []; 
-        const samples = ["1.10x", "1.50x", "2.10x", "4.20x", "8.90x", "50.4x"];
+        const samples = ["1.50x", "4.20x", "8.90x", "2.10x", "50.4x", "1.10x"];
         let sIdx = 0;
 
-        // REAL STATS & PRESENCE
+        // 3. Real Stats & Presence
         let uRef = db.ref('presence/' + Math.random().toString(36).substr(2, 5));
         uRef.set(true); uRef.onDisconnect().remove();
         db.ref('presence').on('value', s => { document.getElementById('uOnline').innerText = s.numChildren(); });
+        
         db.ref('stats').on('value', s => {
             let d = s.val() || {win:0, loss:0};
             document.getElementById('tWinCount').innerText = d.win;
@@ -177,7 +180,7 @@
             document.getElementById('wRate').innerText = r + "%";
         });
 
-        // SAMPLE ANIMATION
+        // 4. Sample Animation
         setInterval(() => {
             const el = document.getElementById('sampleOdds');
             if(el && document.getElementById('sampleArea').style.display !== 'none') {
@@ -185,18 +188,20 @@
             }
         }, 1000);
 
-        // --- 🔵 UPDATED LOGIC 🔵 ---
-
+        // 5. Functions
         function calculateBets() {
             let cap = parseFloat(document.getElementById('capitalInput').value);
             if(!isNaN(cap) && cap > 0) {
                 document.getElementById('bet1Display').innerText = (cap * 0.05).toFixed(2);
                 document.getElementById('bet2Display').innerText = (cap * 0.02).toFixed(2);
+            } else {
+                document.getElementById('bet1Display').innerText = "0.00";
+                document.getElementById('bet2Display').innerText = "0.00";
             }
         }
 
         function setPlat(p) {
-            platform = p;
+            plat = p;
             document.getElementById('p1btn').style.background = p === '1XBET' ? '' : '#111';
             document.getElementById('p2btn').style.background = p === 'OTHERS' ? '' : '#111';
         }
@@ -204,16 +209,14 @@
         function mine() {
             let input = document.getElementById('mInput');
             let val = parseFloat(input.value);
-            if(isNaN(val)) return alert("Enter valid odd!");
+            if(isNaN(val)) return;
             let now = new Date().getTime();
             history.push({odd: val, time: now});
             history = history.filter(h => h.time > (now - 20*60*1000));
-            db.ref(`lifetime/${platform}/${Math.floor(now/180000)}`).push({odd:val, time:now});
+            db.ref(`lifetime/${plat}/${Math.floor(now/180000)}`).push({odd:val, time:now});
             rounds++;
             document.getElementById('tRounds').innerText = rounds;
-            free = Math.floor(rounds/10);
-            updateUnlockUI();
-            input.value = "";
+            free = Math.floor(rounds/10); updateUnlockState(); input.value = "";
         }
 
         function genSig() {
@@ -224,71 +227,54 @@
             
             if(history.length < 5) {
                 v.innerText = "LOW DATA"; m.innerText = "TRY NEXT AFTER ADD DATA";
-                setTimeout(() => { document.getElementById('realSigArea').style.display = 'none'; document.getElementById('sampleArea').style.display = 'block'; }, 3000);
+                setTimeout(() => { 
+                    document.getElementById('realSigArea').style.display = 'none'; 
+                    document.getElementById('sampleArea').style.display = 'block'; 
+                }, 3000);
             } else {
                 let low = history.filter(h => h.odd < 2).length;
                 let high = history.filter(h => h.odd >= 2).length;
-                
-                // New logic: Randomly give odds between 1.2x to 12x based on history
-                let result;
-                let chance = Math.random();
-
-                if (low > high) {
-                    // Probability of safe win is high
-                    result = (Math.random() * (4.5 - 1.5) + 1.5).toFixed(2);
-                    v.style.color = "var(--win)"; m.innerText = "SAFE ENTRY DETECTED";
+                let res;
+                if(low > high) {
+                    res = (Math.random()*(4.1-1.2)+1.2).toFixed(2);
+                    v.innerText = res + "x"; m.innerText = "SAFE ENTRY"; v.style.color = "var(--win)";
                 } else {
-                    // Risk of 1.xx is high
-                    result = (Math.random() * (2.1 - 1.1) + 1.1).toFixed(2);
-                    v.style.color = "var(--loss)"; m.innerText = "HIGH RISK - SMALL ENTRY";
+                    res = (Math.random()*(2.1-1.1)+1.1).toFixed(2);
+                    v.innerText = res + "x"; m.innerText = "RISKY TIME"; v.style.color = "var(--loss)";
                 }
-                
-                v.innerText = result + "x";
                 setTimeout(() => { document.getElementById('fOverlay').style.display = 'flex'; }, 3000);
             }
         }
 
         function submitRes(type) {
-            let lastRoundVal = parseFloat(document.getElementById('lastRoundInput').value);
-            if(isNaN(lastRoundVal)) {
-                alert("Please enter the last round result!");
-                return;
-            }
+            let lastOdd = parseFloat(document.getElementById('lastRoundInput').value);
+            if(isNaN(lastOdd)) { alert("Enter last round odd first!"); return; }
             
-            // Add the last round to system history immediately
             let now = new Date().getTime();
-            history.push({odd: lastRoundVal, time: now});
-            db.ref(`lifetime/${platform}/${Math.floor(now/180000)}`).push({odd:lastRoundVal, time:now});
-            
-            // Save Stats
-            db.ref('stats/'+type).transaction(c => (c||0)+1);
-            
-            // Deduct signal cost
-            if(!vip) { 
-                rounds -= 10; rounds = Math.max(0, rounds); 
-                free = Math.floor(rounds/10); 
-            }
+            history.push({odd: lastOdd, time: now});
+            db.ref(`lifetime/${plat}/${Math.floor(now/180000)}`).push({odd:lastOdd, time:now});
 
-            // UI Reset
+            db.ref('stats/'+type).transaction(c => (c||0)+1);
+            if(!vip) { rounds -= 10; rounds = Math.max(0, rounds); free = Math.floor(rounds/10); }
+            
             document.getElementById('fOverlay').style.display = 'none';
             document.getElementById('realSigArea').style.display = 'none';
             document.getElementById('sampleArea').style.display = 'block';
             document.getElementById('tRounds').innerText = rounds;
-            document.getElementById('lastRoundInput').value = ""; // Clear input
-            updateUnlockUI();
+            document.getElementById('lastRoundInput').value = "";
+            updateUnlockState();
         }
 
-        // --- REST OF THE CORE FUNCTIONS (ADMIN/VIP) ---
         function verifyKey() {
             let k = document.getElementById('vKey').value;
             db.ref('keys/'+k).once('value', s => {
                 if(s.exists() && s.val().expiry > new Date().getTime()) {
-                    vip = true; updateUnlockUI(); alert("VIP ACTIVE ⭐");
+                    vip = true; updateUnlockState(); alert("VIP ACTIVE ⭐");
                 } else alert("Invalid/Expired!");
             });
         }
 
-        function updateUnlockUI() {
+        function updateUnlockState() {
             if(vip || free > 0) {
                 document.getElementById('lockUI').style.display = 'none';
                 document.getElementById('unlockUI').style.display = 'block';
@@ -299,7 +285,7 @@
             }
         }
 
-        function openAdmin() { if(prompt("Admin Key:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block'; }
+        function openAdmin() { if(prompt("Key:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block'; }
         function updateGlobalMsg() { db.ref('globalConfig').update({ message: document.getElementById('adminMsg').value }); }
         function generateKey() {
             let d = parseInt(document.getElementById('keyDuration').value);
@@ -307,10 +293,14 @@
             db.ref('keys/'+k).set({ expiry: new Date().getTime() + (d*86400000) }).then(() => document.getElementById('newKeyOut').innerText = "Key: " + k);
         }
 
+        // 6. Global Message & Chart init
         db.ref('globalConfig/message').on('value', s => {
             const m = s.val(); const b = document.getElementById('displayMsg');
             if(m) { b.innerText = "📢 " + m; b.style.display = "block"; } else { b.style.display = "none"; }
         });
 
         const ctx = document.getElementById('winChart').getContext('2d');
-        new Chart(ctx, { type: 'line', data: { labels: ['0','1','2','3','4','5'], datasets: [{ data: [90,95,92,9
+        new Chart(ctx, { type: 'line', data: { labels: ['0','1','2','3','4','5'], datasets: [{ data: [90,95,92,94,98,95], borderColor: '#00f2ff', fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+    </script>
+</body>
+</html>
