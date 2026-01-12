@@ -13,13 +13,12 @@
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; }
         .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
         h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.2s; }
-        .btn-prime:active { transform: scale(0.98); }
+        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         
         .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; }
-        .btn-wa { background: rgba(37, 211, 102, 0.1); border: 1px solid var(--wa); color: var(--wa); }
-        .btn-tg { background: rgba(0, 136, 204, 0.1); border: 1px solid var(--tg); color: var(--tg); }
+        .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .btn-wa { background: rgba(37, 211, 102, 0.1); border: 1px solid var(--wa); color: var(--wa); border: 1px solid var(--wa); }
+        .btn-tg { background: rgba(0, 136, 204, 0.1); border: 1px solid var(--tg); color: var(--tg); border: 1px solid var(--tg); }
 
         .btn-download { background: linear-gradient(45deg, #ff0055, #ffcc00); color: black; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -29,6 +28,7 @@
         
         .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
+        #sigVal { color: var(--win); text-shadow: 0 0 15px var(--win); }
 
         .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
@@ -57,106 +57,13 @@
     <div style="max-width:500px; margin:auto;">
         
         <div class="stat-grid">
-            <div class="stat-box">Users Online: <b id="uOnline" style="color:var(--neon);">0</b></div>
+            <div class="stat-box">Users Online: <b id="uOnline">0</b></div>
             <div class="stat-box">Real Win Rate: <b id="wRate" style="color:var(--win);">0%</b></div>
         </div>
 
-        <div class="live-scroll" id="liveFeeder">Analyzing global server data...</div>
+        <div class="live-scroll" id="liveFeeder">System standby...</div>
 
         <div class="card">
             <div class="f-overlay" id="fOverlay">
                 <h3 style="margin-bottom:15px;">CONFIRM RESULT</h3>
-                <button class="btn-prime" style="background:var(--win); color:black;" onclick="submitRes('win')">WIN ✅</button>
-                <button class="btn-prime" style="background:var(--loss);" onclick="submitRes('loss')">LOSS ❌</button>
-            </div>
-
-            <div class="signal-box">
-                <div id="sampleArea">
-                    <p id="sampleOdds">1.50x</p>
-                    <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
-                </div>
-                <div id="realSigArea" style="display:none;">
-                    <p id="sigVal">---</p>
-                    <p style="font-size:12px; color:var(--win);" id="sigMsg">AI ANALYSIS ACTIVE</p>
-                </div>
-            </div>
-
-            <div id="lockUI">
-                <p style="font-size:11px; color:#666; margin-top:10px;">ADD 10 PASS ROUND UNLOCK 01 FREE SIGNAL</p>
-                <input type="text" id="vKey" placeholder="ENTER VIP KEY">
-                <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
-                <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
-            </div>
-
-            <div id="unlockUI" style="display:none;">
-                <p id="sLeft" style="color:var(--vip); font-weight:bold;">Signals: 0</p>
-                <button class="btn-prime" id="genBtn" onclick="genSig()">GENERATE SIGNAL</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3 style="font-size: 12px; margin: 0;">SIGNAL ACCURACY CHART</h3>
-            <div class="chart-container"><canvas id="winChart"></canvas></div>
-            <div class="stat-grid" style="font-size: 11px;">
-                <div style="color:var(--win)">Wins: <span id="tWinCount">0</span></div>
-                <div style="color:var(--loss)">Loss: <span id="tLossCount">0</span></div>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>SIGNAL MINING</h3>
-            <div style="display:flex; gap:5px; margin-bottom:10px;">
-                <button id="p1btn" class="btn-prime" style="flex:1; padding:10px; font-size:10px;" onclick="setPlat('1XBET')">1XBET</button>
-                <button id="p2btn" class="btn-prime" style="flex:1; padding:10px; font-size:10px; background:#111;" onclick="setPlat('OTHERS')">OTHERS</button>
-            </div>
-            <input type="text" id="mInput" placeholder="Add Odds (Ex: 1.25, 4.20, 1.10)">
-            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD MINING DATA</button>
-            <p style="margin-top:10px; font-size:12px;">Total Added: <span id="tRounds" style="color:var(--neon);">0</span></p>
-        </div>
-
-        <div class="card" style="border: 1px solid var(--neon);">
-            <h3>MONEY MANAGEMENT</h3>
-            <input type="number" id="capitalInput" placeholder="ENTER YOUR CAPITAL" oninput="calculateBets()">
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <p style="font-size: 10px; color: var(--win); margin:0;">BET 01 (5%)</p>
-                    <h2 id="bet1Display" style="margin:5px 0; font-size:20px;">0.00</h2>
-                </div>
-                <div class="stat-box">
-                    <p style="font-size: 10px; color: var(--pink); margin:0;">BET 02 (2%)</p>
-                    <h2 id="bet2Display" style="margin:5px 0; font-size:20px;">0.00</h2>
-                </div>
-            </div>
-        </div>
-
-        <div id="adminPanel" class="card">
-            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN CONTROL</h3>
-            <input type="text" id="adminMsg" placeholder="Broadcast Message">
-            <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE MESSAGE</button>
-            <p style="font-size: 12px; margin-top: 15px;">🔑 Key Generator:</p>
-            <select id="keyDuration">
-                <option value="1">1 Day</option>
-                <option value="7">7 Days</option>
-                <option value="30">30 Days</option>
-                <option value="365">1 Year</option>
-            </select>
-            <button class="admin-btn" onclick="generateKey()">GENERATE KEY</button>
-            <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 5px;"></div>
-        </div>
-    </div>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
-            authDomain: "nexus-ai-a5dd7.firebaseapp.com",
-            databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
-            projectId: "nexus-ai-a5dd7",
-            storageBucket: "nexus-ai-a5dd7.firebasestorage.app",
-            messagingSenderId: "754990038696",
-            appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        let rounds = 0; let free = 0; let vip = false; let history = []; let platform = "1XBET";
-        const samples = ["1.
+                <button class="btn-prime" style="background:var(--win); color
