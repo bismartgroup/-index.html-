@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | AUTO-SEQUENCE V15.2</title>
+    <title>NEXUS AI | MATRIX ANALYSIS V15.2</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -60,13 +60,12 @@
             <div class="stat-box">Real Win Rate: <b id="wRate" style="color:var(--win);">0%</b></div>
         </div>
 
-        <div class="live-scroll" id="liveFeeder">System standby...</div>
+        <div class="live-scroll" id="liveFeeder">Scanning Patterns...</div>
 
         <div class="card">
             <div class="f-overlay" id="fOverlay">
-                <h3 style="margin-bottom:10px;">ENTER LAST RESULT</h3>
-                <p style="font-size: 11px; color: #aaa; margin-bottom: 10px;">Add last odd to generate next signal</p>
-                <input type="number" id="lastRoundInput" placeholder="Ex: 1.50, 2.40" step="0.01">
+                <h3 style="margin-bottom:10px;">VERIFY PREVIOUS ROUND</h3>
+                <input type="number" id="lastRoundInput" placeholder="Enter last round odd (Ex: 1.50)" step="0.01">
                 <div style="display:flex; gap:10px; width:100%;">
                     <button class="btn-prime" style="background:var(--win); color:black; margin:0;" onclick="submitRes('win')">WIN ✅</button>
                     <button class="btn-prime" style="background:var(--loss); margin:0;" onclick="submitRes('loss')">LOSS ❌</button>
@@ -93,28 +92,28 @@
 
             <div id="unlockUI" style="display:none;">
                 <p id="sLeft" style="color:var(--vip); font-weight:bold;">Signals: 0</p>
-                <button class="btn-prime" id="genBtn" onclick="genSig()">START GENERATING</button>
+                <button class="btn-prime" id="genBtn" onclick="genSig()">START AUTO-ENGINE</button>
             </div>
         </div>
 
         <div class="card">
-            <h3 style="font-size: 12px; margin: 0;">SIGNAL ACCURACY CHART</h3>
+            <h3 style="font-size: 12px; margin: 0;">PROBABILITY CHART</h3>
             <div class="chart-container"><canvas id="winChart"></canvas></div>
             <div class="stat-grid" style="font-size: 11px;">
-                <div style="color:var(--win)">Total Wins: <span id="tWinCount">0</span></div>
-                <div style="color:var(--loss)">Total Loss: <span id="tLossCount">0</span></div>
+                <div style="color:var(--win)">Global Wins: <span id="tWinCount">0</span></div>
+                <div style="color:var(--loss)">Global Loss: <span id="tLossCount">0</span></div>
             </div>
         </div>
 
         <div class="card">
-            <h3>SIGNAL MINING</h3>
+            <h3>DATA MINING ENGINE</h3>
             <div style="display:flex; gap:5px; margin-bottom:10px;">
                 <button id="p1btn" class="btn-prime" style="flex:1; padding:10px; font-size:10px;" onclick="setPlat('1XBET')">1XBET</button>
                 <button id="p2btn" class="btn-prime" style="flex:1; padding:10px; font-size:10px; background:#111;" onclick="setPlat('OTHERS')">OTHERS</button>
             </div>
-            <input type="text" id="mInput" placeholder="Add Odds (Ex: 1.25, 4.20)">
-            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD MINING DATA</button>
-            <p style="margin-top:10px; font-size:12px;">Total Added: <span id="tRounds" style="color:var(--neon);">0</span></p>
+            <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.25, 4.20)">
+            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">MINE SYSTEM DATA</button>
+            <p style="margin-top:10px; font-size:12px;">Data Matrix: <span id="tRounds" style="color:var(--neon);">0</span></p>
         </div>
 
         <div class="card">
@@ -122,26 +121,26 @@
             <input type="number" id="capitalInput" placeholder="ENTER YOUR CAPITAL" oninput="calculateBets()">
             <div class="stat-grid">
                 <div class="stat-box">
-                    <p style="font-size: 10px; color: var(--win); margin:0;">BET 01 (5%)</p>
+                    <p style="font-size: 10px; color: var(--win); margin:0;">SAFE BET (5%)</p>
                     <h2 id="bet1Display" style="margin:5px 0; font-size:20px;">0.00</h2>
                 </div>
                 <div class="stat-box">
-                    <p style="font-size: 10px; color: var(--pink); margin:0;">BET 02 (2%)</p>
+                    <p style="font-size: 10px; color: var(--pink); margin:0;">RECOVER BET (2%)</p>
                     <h2 id="bet2Display" style="margin:5px 0; font-size:20px;">0.00</h2>
                 </div>
             </div>
         </div>
 
         <div id="adminPanel" class="card">
-            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN CONTROL</h3>
+            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN COMMAND CENTER</h3>
             <input type="text" id="adminMsg" placeholder="Broadcast Message">
-            <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE MESSAGE</button>
-            <p style="font-size: 12px; margin-top: 15px;">🔑 Key Generator:</p>
+            <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE SYSTEM MESSAGE</button>
+            <p style="font-size: 12px; margin-top: 15px;">🔑 VIP Access Key Gen:</p>
             <select id="keyDuration">
-                <option value="1">1 Day</option>
-                <option value="7">7 Days</option>
-                <option value="30">30 Days</option>
-                <option value="365">1 Year</option>
+                <option value="1">1 Day Access</option>
+                <option value="7">7 Days Access</option>
+                <option value="30">30 Days Access</option>
+                <option value="365">1 Year Access</option>
             </select>
             <button class="admin-btn" onclick="generateKey()">GENERATE KEY</button>
             <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 5px;"></div>
@@ -149,7 +148,7 @@
     </div>
 
     <script>
-        // 1. Firebase Configuration
+        // 1. Core Config
         const firebaseConfig = {
             apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
             authDomain: "nexus-ai-a5dd7.firebaseapp.com",
@@ -162,14 +161,15 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 2. Global State
+        // 2. Global Intelligence Variables
         let rounds = 0, free = 0, vip = false, platform = "1XBET";
         let history = []; 
-        const samples = ["1.10x", "1.50x", "2.10x", "4.20x", "8.90x", "50.4x"];
+        const samples = ["1.10x", "2.50x", "1.20x", "15.4x", "1.35x", "500x"];
         let sIdx = 0;
 
-        // 3. Real-time Presence & Stats
-        let uRef = db.ref('presence/' + Math.random().toString(36).substr(2, 5));
+        // 3. Real-time User Tracking
+        let userHash = Math.random().toString(36).substr(2, 5);
+        let uRef = db.ref('presence/' + userHash);
         uRef.set(true); uRef.onDisconnect().remove();
         db.ref('presence').on('value', s => { document.getElementById('uOnline').innerText = s.numChildren(); });
         
@@ -189,7 +189,7 @@
             }
         }, 1000);
 
-        // 5. App Functions
+        // 5. Money Management Logic
         function calculateBets() {
             let cap = parseFloat(document.getElementById('capitalInput').value);
             if(!isNaN(cap) && cap > 0) {
@@ -201,125 +201,8 @@
             }
         }
 
+        // 6. Mining & Data Storage
         function setPlat(p) {
             platform = p;
             document.getElementById('p1btn').style.background = p === '1XBET' ? '' : '#111';
-            document.getElementById('p2btn').style.background = p === 'OTHERS' ? '' : '#111';
-        }
-
-        function mine() {
-            let input = document.getElementById('mInput');
-            let val = parseFloat(input.value);
-            if(isNaN(val)) return;
-            let now = new Date().getTime();
-            history.push({odd: val, time: now});
-            history = history.filter(h => h.time > (now - 20*60*1000));
-            db.ref(`lifetime/${platform}/${Math.floor(now/180000)}`).push({odd:val, time:now});
-            rounds++;
-            document.getElementById('tRounds').innerText = rounds;
-            free = Math.floor(rounds/10); updateUnlockState(); input.value = "";
-        }
-
-        // --- 🚀 AUTO SEQUENCE ENGINE 🚀 ---
-
-        function genSig() {
-            if(!vip && free <= 0) { alert("Add 10 rounds first!"); return; }
-            
-            document.getElementById('sampleArea').style.display = 'none';
-            document.getElementById('realSigArea').style.display = 'block';
-            document.getElementById('genBtn').style.display = 'none'; // Hide button after start
-            
-            let v = document.getElementById('sigVal'); let m = document.getElementById('sigMsg');
-            
-            if(history.length < 5) {
-                v.innerText = "LOW DATA"; m.innerText = "TRY NEXT AFTER ADD DATA";
-                setTimeout(() => { 
-                    document.getElementById('realSigArea').style.display = 'none'; 
-                    document.getElementById('sampleArea').style.display = 'block'; 
-                    document.getElementById('genBtn').style.display = 'block';
-                }, 3000);
-            } else {
-                let low = history.filter(h => h.odd < 2).length;
-                let high = history.filter(h => h.odd >= 2).length;
-                let res;
-                if(low > high) {
-                    res = (Math.random()*(4.1-1.2)+1.2).toFixed(2);
-                    v.innerText = res + "x"; m.innerText = "SAFE ENTRY"; v.style.color = "var(--win)";
-                } else {
-                    res = (Math.random()*(2.1-1.1)+1.1).toFixed(2);
-                    v.innerText = res + "x"; m.innerText = "RISKY TIME"; v.style.color = "var(--loss)";
-                }
-                setTimeout(() => { document.getElementById('fOverlay').style.display = 'flex'; }, 3500);
-            }
-        }
-
-        function submitRes(type) {
-            let lastOdd = parseFloat(document.getElementById('lastRoundInput').value);
-            if(isNaN(lastOdd)) { alert("Enter the last odd result first!"); return; }
-            
-            // 1. Add result to analytics
-            let now = new Date().getTime();
-            history.push({odd: lastOdd, time: now});
-            db.ref(`lifetime/${platform}/${Math.floor(now/180000)}`).push({odd:lastOdd, time:now});
-            db.ref('stats/'+type).transaction(c => (c||0)+1);
-
-            // 2. Manage rounds
-            if(!vip) { 
-                rounds -= 10; rounds = Math.max(0, rounds); 
-                free = Math.floor(rounds/10); 
-            }
-            
-            // 3. Reset Overlay & Auto-Generate Next Signal
-            document.getElementById('fOverlay').style.display = 'none';
-            document.getElementById('lastRoundInput').value = "";
-            document.getElementById('tRounds').innerText = rounds;
-            updateUnlockState();
-
-            if(vip || free > 0) {
-                genSig(); // 🟢 AUTO NEXT SIGNAL
-            } else {
-                document.getElementById('realSigArea').style.display = 'none';
-                document.getElementById('sampleArea').style.display = 'block';
-            }
-        }
-
-        // --- ADMIN & KEY LOGIC ---
-        function verifyKey() {
-            let k = document.getElementById('vKey').value;
-            db.ref('keys/'+k).once('value', s => {
-                if(s.exists() && s.val().expiry > new Date().getTime()) {
-                    vip = true; updateUnlockState(); alert("VIP ACTIVE ⭐");
-                } else alert("Invalid/Expired!");
-            });
-        }
-
-        function updateUnlockState() {
-            if(vip || free > 0) {
-                document.getElementById('lockUI').style.display = 'none';
-                document.getElementById('unlockUI').style.display = 'block';
-                document.getElementById('sLeft').innerText = "Signals: " + (vip ? "UNLIMITED" : free);
-            } else {
-                document.getElementById('lockUI').style.display = 'block';
-                document.getElementById('unlockUI').style.display = 'none';
-                document.getElementById('genBtn').style.display = 'block';
-            }
-        }
-
-        function openAdmin() { if(prompt("Key:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block'; }
-        function updateGlobalMsg() { db.ref('globalConfig').update({ message: document.getElementById('adminMsg').value }); }
-        function generateKey() {
-            let d = parseInt(document.getElementById('keyDuration').value);
-            let k = "NXS-"+Math.random().toString(36).substr(2,6).toUpperCase();
-            db.ref('keys/'+k).set({ expiry: new Date().getTime() + (d*86400000) }).then(() => document.getElementById('newKeyOut').innerText = "Key: " + k);
-        }
-
-        db.ref('globalConfig/message').on('value', s => {
-            const m = s.val(); const b = document.getElementById('displayMsg');
-            if(m) { b.innerText = "📢 " + m; b.style.display = "block"; } else { b.style.display = "none"; }
-        });
-
-        const ctx = document.getElementById('winChart').getContext('2d');
-        new Chart(ctx, { type: 'line', data: { labels: ['0','1','2','3','4','5'], datasets: [{ data: [90,95,92,94,98,95], borderColor: '#00f2ff', fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-    </script>
-</body>
-</html>
+            document.getElementById('p2btn').style.background = p === 'OTHERS
