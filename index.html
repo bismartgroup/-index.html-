@@ -3,25 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ENTERPRISE V15.2 ANALYTICS</title>
+    <title>NEXUS AI | ENTERPRISE V15.2 SUPPORT</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; --pink: #ff00ff; --admin: #ff4500; }
+        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; --pink: #ff00ff; --admin: #ff4500; --wa: #25d366; --tg: #0088cc; }
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; }
         .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
         h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
         .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         
+        /* Support Buttons */
+        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .btn-wa { background: rgba(37, 211, 102, 0.1); border: 1px solid var(--wa); color: var(--wa); box-shadow: 0 0 10px rgba(37, 211, 102, 0.2); }
+        .btn-tg { background: rgba(0, 136, 204, 0.1); border: 1px solid var(--tg); color: var(--tg); box-shadow: 0 0 10px rgba(0, 136, 204, 0.2); }
+        .btn-support:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+
         .btn-download { background: linear-gradient(45deg, #ff0055, #ffcc00); color: black; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
         .global-msg { background: rgba(255, 69, 0, 0.2); border: 1px solid var(--admin); padding: 10px; border-radius: 10px; margin-bottom: 15px; display: none; font-size: 13px; color: #fff; }
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; }
         
-        /* Signal Display */
         .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
         #sigVal { color: var(--win); text-shadow: 0 0 15px var(--win); }
@@ -30,8 +36,7 @@
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid #1a1e26; }
 
-        /* Chart & Analytics UI */
-        .chart-container { height: 200px; width: 100%; margin-top: 10px; }
+        .chart-container { height: 180px; width: 100%; margin-top: 10px; }
         .live-scroll { height: 30px; overflow: hidden; background: #000; border-radius: 5px; border: 1px solid #222; margin-top: 10px; font-size: 10px; line-height: 30px; color: var(--neon); }
 
         #adminPanel { display: none; background: #000; border: 2px dashed var(--admin); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; }
@@ -43,6 +48,11 @@
     <h1 style="color:var(--neon);">NEXUS AI <span style="color:var(--vip);">V15.2</span></h1>
     
     <div id="displayMsg" class="global-msg"></div>
+
+    <div class="support-grid" style="max-width:500px; margin: 0 auto 15px auto;">
+        <a href="https://wa.me/94762664220" class="btn-support btn-wa" target="_blank">🟢 GET VIP (WA)</a>
+        <a href="https://t.me/your_telegram_id" class="btn-support btn-tg" target="_blank">🔵 CONTACT ADMIN</a>
+    </div>
 
     <a href="#" class="btn-download" onclick="alert('Starting Download...')">⬇️ DOWNLOAD ANDROID APP</a>
 
@@ -87,12 +97,10 @@
 
         <div class="card">
             <h3 style="font-size: 12px; margin: 0;">SIGNAL ACCURACY CHART</h3>
-            <div class="chart-container">
-                <canvas id="winChart"></canvas>
-            </div>
+            <div class="chart-container"><canvas id="winChart"></canvas></div>
             <div class="stat-grid" style="font-size: 11px;">
-                <div style="color:var(--win)">Total Wins: <span id="tWinCount">1,402</span></div>
-                <div style="color:var(--loss)">Total Loss: <span id="tLossCount">82</span></div>
+                <div style="color:var(--win)">Wins: <span id="tWinCount">1,402</span></div>
+                <div style="color:var(--loss)">Loss: <span id="tLossCount">82</span></div>
             </div>
         </div>
 
@@ -146,15 +154,13 @@
         const samples = ["1.50x", "4.20x", "8.90x", "2.10x", "12.4x", "1.10x"];
         let sIdx = 0;
 
-        // 🟢 CHARTS LOGIC
-        
+        // CHART SETUP
         const ctx = document.getElementById('winChart').getContext('2d');
         const winChart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: ['10:00', '10:10', '10:20', '10:30', '10:40', '10:50'],
                 datasets: [{
-                    label: 'Accuracy %',
                     data: [92, 95, 88, 94, 96, 94],
                     borderColor: '#00f2ff',
                     backgroundColor: 'rgba(0, 242, 255, 0.1)',
@@ -166,22 +172,20 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { color: '#111' } } } }
         });
 
-        // 🟢 LIVE FEEDER LOGIC
-        const feeds = ["Entry Detected: 1.25x", "New Signal Calculating...", "Server Load: 12%", "VIP Key Activated: NXS-****", "AI Prediction: High Odds Expected"];
+        // LIVE ANALYTICS FEED
+        const feeds = ["Analyzing global server data...", "Entry Detected: 1.25x", "Predicting High Odds...", "NXS Server Stable", "Calculating Win Rate..."];
         let fIdx = 0;
         setInterval(() => {
             document.getElementById('liveFeeder').innerText = feeds[fIdx];
             fIdx = (fIdx + 1) % feeds.length;
-            document.getElementById('uOnline').innerText = Math.floor(Math.random() * (280 - 230) + 230);
+            document.getElementById('uOnline').innerText = Math.floor(Math.random() * (295 - 210) + 210);
         }, 3000);
 
-        // Firebase Msg Sync
         db.ref('globalConfig/message').on('value', s => {
             const m = s.val(); const b = document.getElementById('displayMsg');
             if(m) { b.innerText = "📢 " + m; b.style.display = "block"; } else { b.style.display = "none"; }
         });
 
-        // Sample Animation
         setInterval(() => {
             const el = document.getElementById('sampleOdds');
             if(el && document.getElementById('sampleArea').style.display !== 'none') {
@@ -242,7 +246,7 @@
                 if(s.exists() && s.val().expiry > new Date().getTime()) {
                     vip = true; document.getElementById('lockUI').style.display = 'none';
                     document.getElementById('unlockUI').style.display = 'block';
-                    document.getElementById('sLeft').innerText = "Signals: VIP UNLIMITED";
+                    document.getElementById('sLeft').innerText = "Signals: VIP ACTIVE";
                     alert("VIP ACTIVE ⭐");
                 } else { alert("Invalid or Expired!"); }
             });
