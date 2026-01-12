@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ULTRA ENTERPRISE V15.2</title>
+    <title>NEXUS AI | ENTERPRISE V15.2 ANALYTICS</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,11 +15,6 @@
         h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
         .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         
-        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
-        .btn-wa { background: rgba(37, 211, 102, 0.1); border: 1px solid var(--wa); color: var(--wa); box-shadow: 0 0 10px rgba(37, 211, 102, 0.2); }
-        .btn-tg { background: rgba(0, 136, 204, 0.1); border: 1px solid var(--tg); color: var(--tg); box-shadow: 0 0 10px rgba(0, 136, 204, 0.2); }
-
         .btn-download { background: linear-gradient(45deg, #ff0055, #ffcc00); color: black; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
@@ -39,10 +34,6 @@
 
         #adminPanel { display: none; background: #000; border: 2px dashed var(--admin); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; }
         .admin-btn { background: var(--admin); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: bold; }
-        
-        .platform-sel { display: flex; gap: 5px; margin-bottom: 10px; }
-        .p-btn { flex: 1; padding: 10px; font-size: 10px; background: #111; border: 1px solid #333; color: white; border-radius: 5px; cursor: pointer; }
-        .p-btn.active { border-color: var(--neon); color: var(--neon); background: rgba(0, 242, 255, 0.1); }
     </style>
 </head>
 <body>
@@ -80,8 +71,7 @@
                     <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
                 </div>
                 <div id="realSigArea" style="display:none;">
-                    <p id="sigVal" style="font-size: 40px;">---</p>
-                    <p style="font-size:12px; color:var(--win);" id="sigMsg">AI ANALYSIS ACTIVE</p>
+                    <p id="sigVal" style="font-size: 40px;">---</p> <p style="font-size:12px; color:var(--win);" id="sigMsg">AI ANALYSIS ACTIVE</p>
                 </div>
             </div>
 
@@ -104,9 +94,9 @@
 
         <div class="card">
             <h3>SIGNAL MINING</h3>
-            <div class="platform-sel">
-                <button class="p-btn active" onclick="setPlatform('1XBET', this)">1XBET</button>
-                <button class="p-btn" onclick="setPlatform('OTHERS', this)">OTHERS</button>
+            <div style="display:flex; gap:5px; margin-bottom:10px;">
+                <button id="p1" class="btn-prime" style="flex:1; padding:10px; font-size:10px;" onclick="setPlat('1XBET')">1XBET</button>
+                <button id="p2" class="btn-prime" style="flex:1; padding:10px; font-size:10px; background:#222;" onclick="setPlat('OTHERS')">OTHERS</button>
             </div>
             <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.25, 4.20, 1.10)">
             <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD MINING DATA</button>
@@ -140,7 +130,6 @@
     </div>
 
     <script>
-        // --- 🟢 CONFIG & GLOBAL VARS ---
         const firebaseConfig = {
             apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
             authDomain: "nexus-ai-a5dd7.firebaseapp.com",
@@ -153,14 +142,12 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let rounds = 0; let free = 0; let vip = false;
-        let history = []; 
-        let currentPlatform = "1XBET";
+        let rounds = 0; let free = 0; let vip = false; let plat = "1XBET";
+        let history = []; let lastBig = 0;
         const samples = ["1.50x", "4.20x", "8.90x", "2.10x", "12.4x", "1.10x"];
         let sIdx = 0;
-        let lastBigWinTime = 0;
 
-        // --- 🟢 UI ANIMATIONS & CHARTS ---
+        // CHART SETUP
         const ctx = document.getElementById('winChart').getContext('2d');
         const winChart = new Chart(ctx, {
             type: 'line',
@@ -177,6 +164,15 @@
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { color: '#111' } } } }
         });
 
+        // LIVE ANALYTICS FEED
+        const feeds = ["Analyzing global server data...", "Entry Detected: 1.25x", "Predicting High Odds...", "Calculating Win Rate..."];
+        let fIdx = 0;
+        setInterval(() => {
+            document.getElementById('liveFeeder').innerText = feeds[fIdx];
+            fIdx = (fIdx + 1) % feeds.length;
+            document.getElementById('uOnline').innerText = Math.floor(Math.random() * (295 - 210) + 210);
+        }, 3000);
+
         setInterval(() => {
             const el = document.getElementById('sampleOdds');
             if(el && document.getElementById('sampleArea').style.display !== 'none') {
@@ -184,77 +180,24 @@
             }
         }, 1000);
 
-        setInterval(() => {
-            document.getElementById('uOnline').innerText = Math.floor(Math.random() * (295 - 210) + 210);
-        }, 3000);
+        // --- 🔵 SMART SYSTEM LOGIC 🔵 ---
 
-        // --- 🟢 SYSTEM LOGIC ---
-
-        function setPlatform(p, btn) {
-            currentPlatform = p;
-            document.querySelectorAll('.p-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+        function setPlat(p) { 
+            plat = p; 
+            document.getElementById('p1').style.background = p === "1XBET" ? "" : "#222";
+            document.getElementById('p2').style.background = p === "OTHERS" ? "" : "#222";
         }
 
         function mine() {
             let input = document.getElementById('mInput');
             if(!input.value) return;
-            
-            let oddsArr = input.value.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
+            let valArr = input.value.split(',').map(n => parseFloat(n.trim())).filter(n => !isNaN(n));
             let now = new Date().getTime();
 
-            oddsArr.forEach(odd => {
-                let entry = { odd: odd, time: now, platform: currentPlatform };
+            valArr.forEach(v => {
+                let entry = { odd: v, time: now, platform: plat };
                 history.push(entry);
-                
-                // Lifetime Storage in 3-min buckets
+                // 3-min bucket save to Firebase
                 let bucket = Math.floor(now / (3 * 60 * 1000));
-                db.ref(`lifetime_data/${currentPlatform}/${bucket}`).push(entry);
-
-                // Tracking Big Wins
-                if(odd >= 5) lastBigWinTime = now;
-            });
-
-            // Keep only last 20 mins for live analysis
-            history = history.filter(h => h.time > (now - 20 * 60 * 1000));
-
-            rounds += oddsArr.length;
-            document.getElementById('tRounds').innerText = rounds;
-            free = Math.floor(rounds / 10);
-            updateUnlockUI();
-            input.value = "";
-        }
-
-        function genSig() {
-            if(!vip && free <= 0) return;
-            
-            document.getElementById('sampleArea').style.display = 'none';
-            document.getElementById('realSigArea').style.display = 'block';
-            let valEl = document.getElementById('sigVal');
-            let msgEl = document.getElementById('sigMsg');
-            let now = new Date().getTime();
-
-            // DATA ANALYSIS ENGINE
-            let lowCount = history.filter(h => h.odd < 2).length;
-            let highCount = history.filter(h => h.odd >= 2).length;
-            let last5 = history.slice(-5);
-            let hasUltra = history.some(h => h.odd >= 50);
-            let hasSuper = history.some(h => h.odd >= 35);
-
-            let resultOdd = "WAIT";
-            let color = "var(--vip)";
-            let message = "ANALYZING...";
-
-            // 📊 COMPLEX RULES
-            if (history.length < 5) {
-                resultOdd = "LOW DATA";
-                message = "ADD MORE DATA FOR GOOD SIGNAL";
-                document.getElementById('wRate').innerText = "45.0%";
-            }
-            else if (hasUltra && (now - lastBigWinTime < 5 * 60 * 1000)) {
-                resultOdd = "50.00x";
-                message = "NEXT HIGH ODD TIME (50+)";
-                color = "var(--pink)";
-            }
-            else if (hasSuper && (now - lastBigWinTime > 3 * 60 * 1000)) {
-                resultOdd
+                db.ref(`lifetime_data/${plat}/${bucket}`).push(entry);
+                if(v
