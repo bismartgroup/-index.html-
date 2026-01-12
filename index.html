@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ENTERPRISE V15.2 SUPPORT</title>
+    <title>NEXUS AI | ENTERPRISE V15.2 FINAL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -19,7 +19,6 @@
         .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
         .btn-wa { background: rgba(37, 211, 102, 0.1); border: 1px solid var(--wa); color: var(--wa); box-shadow: 0 0 10px rgba(37, 211, 102, 0.2); }
         .btn-tg { background: rgba(0, 136, 204, 0.1); border: 1px solid var(--tg); color: var(--tg); box-shadow: 0 0 10px rgba(0, 136, 204, 0.2); }
-        .btn-support:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
         .btn-download { background: linear-gradient(45deg, #ff0055, #ffcc00); color: black; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
@@ -50,7 +49,7 @@
 
     <div class="support-grid" style="max-width:500px; margin: 0 auto 15px auto;">
         <a href="https://wa.me/94762664220" class="btn-support btn-wa" target="_blank">🟢 GET VIP (WA)</a>
-        <a href="https://t.me/your_telegram_id" class="btn-support btn-tg" target="_blank">🔵 CONTACT ADMIN</a>
+        <a href="https://t.me/NEXUS_ADMIN" class="btn-support btn-tg" target="_blank">🔵 CONTACT ADMIN</a>
     </div>
 
     <a href="#" class="btn-download" onclick="alert('Starting Download...')">⬇️ DOWNLOAD ANDROID APP</a>
@@ -59,7 +58,7 @@
         
         <div class="stat-grid">
             <div class="stat-box">Users Online: <b id="uOnline" style="color:var(--neon);">0</b></div>
-            <div class="stat-box">Win Rate: <b id="wRate" style="color:var(--win);">94.2%</b></div>
+            <div class="stat-box">Real Win Rate: <b id="wRate" style="color:var(--win);">0%</b></div>
         </div>
 
         <div class="live-scroll" id="liveFeeder">Analyzing global server data...</div>
@@ -83,7 +82,7 @@
             </div>
 
             <div id="lockUI">
-                <p style="font-size:11px; color:#666; margin-top:10px;">ADD 10 PASS ROUND AND UNLOCK 01 FREE SIGNAL</p>
+                <p style="font-size:11px; color:#666; margin-top:10px;">ADD 10PASS ODD UNLOCK 01FREE SIGNAL</p>
                 <input type="text" id="vKey" placeholder="ENTER VIP KEY">
                 <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
                 <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
@@ -99,16 +98,16 @@
             <h3 style="font-size: 12px; margin: 0;">SIGNAL ACCURACY CHART</h3>
             <div class="chart-container"><canvas id="winChart"></canvas></div>
             <div class="stat-grid" style="font-size: 11px;">
-                <div style="color:var(--win)">Wins: <span id="tWinCount">0</span></div>
-                <div style="color:var(--loss)">Loss: <span id="tLossCount">0</span></div>
+                <div style="color:var(--win)">Total Wins: <span id="tWinCount">0</span></div>
+                <div style="color:var(--loss)">Total Loss: <span id="tLossCount">0</span></div>
             </div>
         </div>
 
         <div class="card">
             <h3>SIGNAL MINING</h3>
             <div style="display:flex; gap:5px; margin-bottom:10px;">
-                <button class="admin-btn" style="background:#111; margin:0;" onclick="setPlatform('1XBET')">1XBET</button>
-                <button class="admin-btn" style="background:#111; margin:0;" onclick="setPlatform('OTHERS')">OTHERS</button>
+                <button id="p1btn" class="p-btn btn-prime" style="flex:1; padding:10px; font-size:10px;" onclick="setPlatform('1XBET')">1XBET</button>
+                <button id="p2btn" class="p-btn btn-prime" style="flex:1; padding:10px; font-size:10px; background:#111;" onclick="setPlatform('OTHERS')">OTHERS</button>
             </div>
             <input type="text" id="mInput" placeholder="Add Odds (Ex: 1.25, 4.20, 1.10)">
             <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD MINING DATA</button>
@@ -135,7 +134,12 @@
             <input type="text" id="adminMsg" placeholder="Broadcast Message">
             <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE MESSAGE</button>
             <p style="font-size: 12px; margin-top: 15px;">🔑 Key Gen:</p>
-            <select id="keyDuration"><option value="1">1 Day</option><option value="7">7 Days</option><option value="30">30 Days</option></select>
+            <select id="keyDuration">
+                <option value="1">1 Day</option>
+                <option value="7">7 Days</option>
+                <option value="30">30 Days</option>
+                <option value="365">1 Year</option>
+            </select>
             <button class="admin-btn" onclick="generateKey()">GENERATE KEY</button>
             <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 5px;"></div>
         </div>
@@ -159,41 +163,25 @@
         const samples = ["1.50x", "4.20x", "8.90x", "2.10x", "12.4x", "1.10x"];
         let sIdx = 0;
 
-        // --- 🟢 REAL USER TRACKING ---
-        let userRef = db.ref('presence/' + Math.random().toString(36).substr(2, 9));
-        userRef.set(true);
-        userRef.onDisconnect().remove();
-
-        db.ref('presence').on('value', s => {
-            document.getElementById('uOnline').innerText = s.numChildren();
-        });
-
-        // --- 🟢 REAL WIN RATE TRACKING ---
-        let totalWin = 0, totalLoss = 0;
+        // --- 🟢 REAL USER & STATS TRACKING ---
+        let userPresence = db.ref('presence/' + Math.random().toString(36).substr(2, 9));
+        userPresence.set(true); userPresence.onDisconnect().remove();
+        db.ref('presence').on('value', s => { document.getElementById('uOnline').innerText = s.numChildren(); });
+        
         db.ref('stats').on('value', s => {
-            let data = s.val() || {win: 0, loss: 0};
-            totalWin = data.win; totalLoss = data.loss;
-            document.getElementById('tWinCount').innerText = totalWin;
-            document.getElementById('tLossCount').innerText = totalLoss;
-            let rate = totalWin + totalLoss > 0 ? (totalWin / (totalWin + totalLoss) * 100).toFixed(1) : 0;
+            let d = s.val() || {win:0, loss:0};
+            document.getElementById('tWinCount').innerText = d.win;
+            document.getElementById('tLossCount').innerText = d.loss;
+            let rate = (d.win+d.loss) > 0 ? (d.win/(d.win+d.loss)*100).toFixed(1) : 0;
             document.getElementById('wRate').innerText = rate + "%";
         });
 
-        // --- 🟢 UI INITIALIZATION ---
+        // --- 🟢 UI ANIMATIONS & CALC ---
         const ctx = document.getElementById('winChart').getContext('2d');
         const winChart = new Chart(ctx, {
             type: 'line',
-            data: {
-                labels: ['10:00', '10:10', '10:20', '10:30', '10:40', '10:50'],
-                datasets: [{
-                    data: [92, 95, 88, 94, 96, 94],
-                    borderColor: '#00f2ff',
-                    backgroundColor: 'rgba(0, 242, 255, 0.1)',
-                    borderWidth: 2,
-                    fill: true, tension: 0.4
-                }]
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { color: '#111' } } } }
+            data: { labels: ['00','10','20','30','40','50'], datasets: [{ data: [90, 95, 92, 94, 98, 95], borderColor: '#00f2ff', fill: true, tension: 0.4 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
 
         setInterval(() => {
@@ -203,60 +191,16 @@
             }
         }, 1000);
 
-        // --- 🟢 DATA MINING & ANALYSIS ---
-        function setPlatform(p) { platform = p; showLiveStatus("Platform: " + p); }
-
-        function mine() {
-            let input = document.getElementById('mInput');
-            let oddValue = parseFloat(input.value);
-            let timestamp = new Date().getTime();
-
-            if (isNaN(oddValue)) { alert("Enter valid odd!"); return; }
-
-            let entry = { odd: oddValue, time: timestamp, platform: platform };
-            history.push(entry);
-            let twentyMinsAgo = timestamp - (20 * 60 * 1000);
-            history = history.filter(h => h.time > twentyMinsAgo);
-
-            let bucket = Math.floor(timestamp / (3 * 60 * 1000)); 
-            db.ref(`lifetime_data/${platform}/${bucket}`).push(entry);
-
-            rounds++;
-            document.getElementById('tRounds').innerText = rounds;
-            free = Math.floor(rounds / 10);
-            updateUnlockState();
-            input.value = "";
-            showLiveStatus("Data Analyzed for " + platform);
+        function calculateBets() {
+            let cap = parseFloat(document.getElementById('capitalInput').value);
+            if(!isNaN(cap) && cap > 0) {
+                document.getElementById('bet1Display').innerText = (cap * 0.05).toLocaleString();
+                document.getElementById('bet2Display').innerText = (cap * 0.02).toLocaleString();
+            } else {
+                document.getElementById('bet1Display').innerText = "0.00";
+                document.getElementById('bet2Display').innerText = "0.00";
+            }
         }
 
-        // --- 🟢 SMART SIGNAL GENERATION ---
-        function genSig() {
-            if (!vip && free <= 0) { alert("Add More Data!"); return; }
-
-            document.getElementById('sampleArea').style.display = 'none';
-            document.getElementById('realSigArea').style.display = 'block';
-            let valEl = document.getElementById('sigVal');
-            let msgEl = document.getElementById('sigMsg');
-
-            let lowOdds = history.filter(h => h.odd < 2).length;
-            let highOdds = history.filter(h => h.odd >= 2).length;
-            let superOdds = history.find(h => h.odd >= 35);
-            let ultraOdds = history.find(h => h.odd >= 50);
-
-            let resultOdd = "WAIT";
-            let statusColor = "var(--vip)";
-            let msg = "ANALYZING MARKET...";
-
-            if (history.length < 5) {
-                msg = "TRY TO NEXT AFTER THE ADD DATA";
-                resultOdd = "LOW DATA"; 
-                statusColor = "gray"; 
-                valEl.innerText = resultOdd;
-                msgEl.innerText = msg;
-                valEl.style.color = statusColor;
-                msgEl.style.color = statusColor;
-                valEl.style.fontSize = "35px";
-                
-                setTimeout(() => {
-                    document.getElementById('realSigArea').style.display = 'none';
-                    document.getElementById('sampleArea').style
+        // --- 🟢 DATA MINING ENGINE ---
+        function setPlatform(p
