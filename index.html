@@ -109,12 +109,19 @@
         </div>
 
         <div id="adminPanel" class="card">
-            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN CONTROL</h3>
-            <input type="text" id="adminMsg" placeholder="System Message">
+            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN COMMAND CENTER</h3>
+            <input type="text" id="adminMsg" placeholder="System Broadcast Message">
             <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE MSG</button>
-            <p style="font-size: 12px; margin-top: 15px;">🔑 GLOBAL KEY GEN (EXPIRY IN HOURS):</p>
-            <input type="number" id="hourInput" placeholder="Expire in (Hours)">
-            <button class="admin-btn" onclick="generateGlobalKey()">GENERATE GLOBAL KEY</button>
+            
+            <p style="font-size: 12px; margin-top: 15px;">🔑 VIP KEY GENERATOR:</p>
+            <select id="keyDuration">
+                <option value="1">1 Day</option>
+                <option value="7">7 Days</option>
+                <option value="30">30 Days</option>
+                <option value="365">1 Year</option>
+                <option value="9999">LIFETIME</option>
+            </select>
+            <button class="admin-btn" onclick="generateKey()">GENERATE VIP KEY</button>
             <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 5px; word-break: break-all;"></div>
         </div>
     </div>
@@ -141,7 +148,6 @@
 
         setInterval(() => { if(document.getElementById('sampleArea').style.display !== 'none') { document.getElementById('sampleOdds').innerText = samples[sIdx]; sIdx = (sIdx + 1) % samples.length; } }, 1000);
 
-        // SYSTEM FUNCTIONS
         function calculateBets() {
             let cap = parseFloat(document.getElementById('capitalInput').value);
             if(!isNaN(cap)) { document.getElementById('bet1Display').innerText = (cap*0.05).toFixed(2); document.getElementById('bet2Display').innerText = (cap*0.02).toFixed(2); }
@@ -163,8 +169,8 @@
                 setTimeout(() => { document.getElementById('realSigArea').style.display='none'; document.getElementById('sampleArea').style.display='block'; }, 3000);
             } else {
                 let low = history.filter(h => h.odd < 2).length; let high = history.filter(h => h.odd >= 2).length;
-                let res = (low > high) ? (Math.random()*(4.1-2.1)+2.1).toFixed(2) : (Math.random()*(1.9-1.1)+1.1).toFixed(2);
-                v.innerText = res + "x"; m.innerText = (low > high) ? "100% SAFE WIN" : "RISKY TIME"; v.style.color = (low > high)?"var(--win)":"var(--loss)";
+                let res = (low > high) ? (Math.random()*(3.1-1.8)+1.8).toFixed(2) : (Math.random()*(1.9-1.1)+1.1).toFixed(2);
+                v.innerText = res + "x"; m.innerText = "MATRIX ANALYSIS OK"; v.style.color = (low > high)?"var(--win)":"var(--loss)";
                 setTimeout(() => { document.getElementById('fOverlay').style.display='flex'; }, 3500);
             }
         }
@@ -178,9 +184,11 @@
         }
 
         function verifyKey() {
-            let k = document.getElementById('vKey').value;
+            let k = document.getElementById('vKey').value.trim();
+            if(!k) return alert("Enter Key!");
             db.ref('keys/'+k).once('value', s => {
-                if(s.exists() && s.val().expiry > Date.now()) { vip = true; updateUnlockState(); alert("VIP ACTIVE!"); } else alert("Invalid Key!");
+                if(s.exists() && s.val().expiry > Date.now()) { vip = true; updateUnlockState(); alert("VIP ACCESS GRANTED!"); } 
+                else alert("Invalid or Expired Key!");
             });
         }
 
@@ -189,13 +197,14 @@
             else { document.getElementById('lockUI').style.display='block'; document.getElementById('unlockUI').style.display='none'; }
         }
 
-        function openAdmin() { if(prompt("Auth:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block'; }
+        function openAdmin() { if(prompt("Auth Code:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block'; }
         function updateGlobalMsg() { db.ref('globalConfig').update({ message: document.getElementById('adminMsg').value }); }
         
-        function generateGlobalKey() {
-            let h = parseInt(document.getElementById('hourInput').value) || 1;
-            let k = "FREE-"+Math.random().toString(36).substr(2,6).toUpperCase();
-            db.ref('keys/'+k).set({ expiry: Date.now() + (h*3600000) }).then(() => document.getElementById('newKeyOut').innerText = "Global Key: " + k);
+        function generateKey() {
+            let d = parseInt(document.getElementById('keyDuration').value);
+            let k = "NXS-" + Math.random().toString(36).substr(2,7).toUpperCase();
+            let exp = Date.now() + (d * 24 * 60 * 60 * 1000);
+            db.ref('keys/'+k).set({ expiry: exp }).then(() => { document.getElementById('newKeyOut').innerText = "VIP KEY: " + k; });
         }
 
         db.ref('globalConfig/message').on('value', s => {
