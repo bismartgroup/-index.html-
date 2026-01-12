@@ -13,10 +13,10 @@
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; }
         .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
         h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.2s; }
         
         .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
+        .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; }
         .btn-wa { background: rgba(37, 211, 102, 0.1); border: 1px solid var(--wa); color: var(--wa); border: 1px solid var(--wa); }
         .btn-tg { background: rgba(0, 136, 204, 0.1); border: 1px solid var(--tg); color: var(--tg); border: 1px solid var(--tg); }
 
@@ -28,7 +28,6 @@
         
         .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
-        #sigVal { color: var(--win); text-shadow: 0 0 15px var(--win); }
 
         .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
@@ -72,7 +71,7 @@
 
             <div class="signal-box">
                 <div id="sampleArea">
-                    <p id="sampleOdds">1.00x</p>
+                    <p id="sampleOdds">1.50x</p>
                     <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
                 </div>
                 <div id="realSigArea" style="display:none;">
@@ -82,7 +81,7 @@
             </div>
 
             <div id="lockUI">
-                <p style="font-size:11px; color:#666; margin-top:10px;">ADD 10PASS ODD UNLOCK 01FREE SIGNAL</p>
+                <p style="font-size:11px; color:#666; margin-top:10px;">ADD 10 PASS ROUND UNLOCK 01 FREE SIGNAL</p>
                 <input type="text" id="vKey" placeholder="ENTER VIP KEY">
                 <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
                 <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
@@ -90,7 +89,7 @@
 
             <div id="unlockUI" style="display:none;">
                 <p id="sLeft" style="color:var(--vip); font-weight:bold;">Signals: 0</p>
-                <button class="btn-prime" onclick="genSig()">GENERATE SIGNAL</button>
+                <button class="btn-prime" id="genBtn" onclick="genSig()">GENERATE SIGNAL</button>
             </div>
         </div>
 
@@ -98,16 +97,16 @@
             <h3 style="font-size: 12px; margin: 0;">SIGNAL ACCURACY CHART</h3>
             <div class="chart-container"><canvas id="winChart"></canvas></div>
             <div class="stat-grid" style="font-size: 11px;">
-                <div style="color:var(--win)">Wins: <span id="tWinCount">0</span></div>
-                <div style="color:var(--loss)">Loss: <span id="tLossCount">0</span></div>
+                <div style="color:var(--win)">Total Wins: <span id="tWinCount">0</span></div>
+                <div style="color:var(--loss)">Total Loss: <span id="tLossCount">0</span></div>
             </div>
         </div>
 
         <div class="card">
             <h3>SIGNAL MINING</h3>
             <div style="display:flex; gap:5px; margin-bottom:10px;">
-                <button id="p1" class="btn-prime" style="flex:1; padding:10px; font-size:10px;" onclick="setPlat('1XBET')">1XBET</button>
-                <button id="p2" class="btn-prime" style="flex:1; padding:10px; font-size:10px; background:#222;" onclick="setPlat('OTHERS')">OTHERS</button>
+                <button id="p1btn" class="btn-prime" style="flex:1; padding:10px; font-size:10px;" onclick="setPlat('1XBET')">1XBET</button>
+                <button id="p2btn" class="btn-prime" style="flex:1; padding:10px; font-size:10px; background:#111;" onclick="setPlat('OTHERS')">OTHERS</button>
             </div>
             <input type="text" id="mInput" placeholder="Add Odds (Ex: 1.25, 4.20)">
             <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD MINING DATA</button>
@@ -146,7 +145,6 @@
     </div>
 
     <script>
-        // 1. Config
         const firebaseConfig = {
             apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
             authDomain: "nexus-ai-a5dd7.firebaseapp.com",
@@ -159,13 +157,12 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 2. Global Vars
-        let rounds = 0; let free = 0; let vip = false; let plat = "1XBET";
+        let rounds = 0; let free = 0; let vip = false; let platform = "1XBET";
         let history = []; 
         const samples = ["1.50x", "4.20x", "8.90x", "2.10x", "50.4x", "1.10x"];
         let sIdx = 0;
 
-        // 3. Presence & Real Stats
+        // REAL STATS
         let uRef = db.ref('presence/' + Math.random().toString(36).substr(2, 5));
         uRef.set(true); uRef.onDisconnect().remove();
         db.ref('presence').on('value', s => { document.getElementById('uOnline').innerText = s.numChildren(); });
@@ -177,7 +174,7 @@
             document.getElementById('wRate').innerText = r + "%";
         });
 
-        // 4. Sample Animation
+        // SAMPLE ANIMATION
         setInterval(() => {
             const el = document.getElementById('sampleOdds');
             if(el && document.getElementById('sampleArea').style.display !== 'none') {
@@ -185,36 +182,27 @@
             }
         }, 1000);
 
-        // --- 🟢 ALL BUTTON FUNCTIONS FIXED ---
-
         function calculateBets() {
             let cap = parseFloat(document.getElementById('capitalInput').value);
             if(!isNaN(cap) && cap > 0) {
                 document.getElementById('bet1Display').innerText = (cap * 0.05).toFixed(2);
                 document.getElementById('bet2Display').innerText = (cap * 0.02).toFixed(2);
-            } else {
-                document.getElementById('bet1Display').innerText = "0.00";
-                document.getElementById('bet2Display').innerText = "0.00";
             }
         }
 
         function setPlat(p) {
-            plat = p;
-            document.getElementById('p1').style.background = p === '1XBET' ? "" : "#222";
-            document.getElementById('p2').style.background = p === 'OTHERS' ? "" : "#222";
+            platform = p;
+            document.getElementById('p1btn').style.background = p === '1XBET' ? '' : '#111';
+            document.getElementById('p2btn').style.background = p === 'OTHERS' ? '' : '#111';
         }
 
         function mine() {
             let input = document.getElementById('mInput');
             let val = parseFloat(input.value);
-            if(isNaN(val)) return alert("Enter valid odd!");
+            if(isNaN(val)) return;
             let now = new Date().getTime();
             history.push({odd: val, time: now});
             history = history.filter(h => h.time > (now - 20*60*1000));
-            
-            // Bucket storage
-            db.ref(`lifetime/${plat}/${Math.floor(now/180000)}`).push({odd:val, time:now});
-            
             rounds++;
             document.getElementById('tRounds').innerText = rounds;
             free = Math.floor(rounds/10);
@@ -234,8 +222,16 @@
             } else {
                 let low = history.filter(h => h.odd < 2).length;
                 let high = history.filter(h => h.odd >= 2).length;
-                if(low > high) {
-                    v.innerText = (Math.random()*(4.2-2.1)+2.1).toFixed(2)+"x"; m.innerText = "WIN TIME"; v.style.color = "var(--win)";
+                let ultra = history.some(h => h.odd >= 20);
+
+                let chance = Math.random();
+
+                if (ultra && chance > 0.7) {
+                    v.innerText = (Math.random()*(15.5-5.5)+5.5).toFixed(2)+"x";
+                    m.innerText = "BIG WIN DETECTED"; v.style.color = "var(--pink)";
+                } else if (low > high) {
+                    v.innerText = (Math.random()*(3.2-1.8)+1.8).toFixed(2)+"x";
+                    m.innerText = "SAFE ENTRY"; v.style.color = "var(--win)";
                 } else {
                     v.innerText = "WAIT"; m.innerText = "LOSS TIME DETECTED"; v.style.color = "var(--loss)";
                 }
@@ -281,16 +277,13 @@
             db.ref('keys/'+k).set({ expiry: new Date().getTime() + (d*86400000) }).then(() => document.getElementById('newKeyOut').innerText = "Key: " + k);
         }
 
-        // Global Msg Sync
         db.ref('globalConfig/message').on('value', s => {
             const m = s.val(); const b = document.getElementById('displayMsg');
-            if(m) { b.innerText = "📢 " + m; b.style.display = "block"; } else { b.style.display = "none"; }
+            if(m) { b.innerText = "📢 " + m; b.style.display = "block"; } else b.style.display = "none";
         });
 
-        // Chart Setup
         const ctx = document.getElementById('winChart').getContext('2d');
         new Chart(ctx, { type: 'line', data: { labels: ['0','1','2','3','4','5'], datasets: [{ data: [90,95,92,94,98,95], borderColor: '#00f2ff', fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
-
     </script>
 </body>
 </html>
