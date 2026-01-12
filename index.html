@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ENTERPRISE V15.2 ANALYTICS</title>
+    <title>NEXUS AI | ENTERPRISE V15.2 SUPPORT</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,7 +15,6 @@
         h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
         .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         
-        /* Support Buttons */
         .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; transition: 0.3s; }
         .btn-wa { background: rgba(37, 211, 102, 0.1); border: 1px solid var(--wa); color: var(--wa); box-shadow: 0 0 10px rgba(37, 211, 102, 0.2); }
@@ -59,7 +58,7 @@
     <div style="max-width:500px; margin:auto;">
         
         <div class="stat-grid">
-            <div class="stat-box">Users Online: <b id="uOnline" style="color:var(--neon);">241</b></div>
+            <div class="stat-box">Users Online: <b id="uOnline" style="color:var(--neon);">0</b></div>
             <div class="stat-box">Win Rate: <b id="wRate" style="color:var(--win);">94.2%</b></div>
         </div>
 
@@ -84,6 +83,7 @@
             </div>
 
             <div id="lockUI">
+                <p style="font-size:11px; color:#666; margin-top:10px;">ADD 10 PASS ROUND AND UNLOCK 01 FREE SIGNAL</p>
                 <input type="text" id="vKey" placeholder="ENTER VIP KEY">
                 <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
                 <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
@@ -99,8 +99,8 @@
             <h3 style="font-size: 12px; margin: 0;">SIGNAL ACCURACY CHART</h3>
             <div class="chart-container"><canvas id="winChart"></canvas></div>
             <div class="stat-grid" style="font-size: 11px;">
-                <div style="color:var(--win)">Wins: <span id="tWinCount">1,402</span></div>
-                <div style="color:var(--loss)">Loss: <span id="tLossCount">82</span></div>
+                <div style="color:var(--win)">Wins: <span id="tWinCount">0</span></div>
+                <div style="color:var(--loss)">Loss: <span id="tLossCount">0</span></div>
             </div>
         </div>
 
@@ -154,11 +154,30 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- 🟢 ENGINE VARIABLES ---
         let rounds = 0; let free = 0; let vip = false;
         let history = []; let platform = "1XBET";
         const samples = ["1.50x", "4.20x", "8.90x", "2.10x", "12.4x", "1.10x"];
         let sIdx = 0;
+
+        // --- 🟢 REAL USER TRACKING ---
+        let userRef = db.ref('presence/' + Math.random().toString(36).substr(2, 9));
+        userRef.set(true);
+        userRef.onDisconnect().remove();
+
+        db.ref('presence').on('value', s => {
+            document.getElementById('uOnline').innerText = s.numChildren();
+        });
+
+        // --- 🟢 REAL WIN RATE TRACKING ---
+        let totalWin = 0, totalLoss = 0;
+        db.ref('stats').on('value', s => {
+            let data = s.val() || {win: 0, loss: 0};
+            totalWin = data.win; totalLoss = data.loss;
+            document.getElementById('tWinCount').innerText = totalWin;
+            document.getElementById('tLossCount').innerText = totalLoss;
+            let rate = totalWin + totalLoss > 0 ? (totalWin / (totalWin + totalLoss) * 100).toFixed(1) : 0;
+            document.getElementById('wRate').innerText = rate + "%";
+        });
 
         // --- 🟢 UI INITIALIZATION ---
         const ctx = document.getElementById('winChart').getContext('2d');
@@ -184,10 +203,6 @@
             }
         }, 1000);
 
-        setInterval(() => {
-            document.getElementById('uOnline').innerText = Math.floor(Math.random() * (295 - 210) + 210);
-        }, 3000);
-
         // --- 🟢 DATA MINING & ANALYSIS ---
         function setPlatform(p) { platform = p; showLiveStatus("Platform: " + p); }
 
@@ -199,7 +214,6 @@
             if (isNaN(oddValue)) { alert("Enter valid odd!"); return; }
 
             let entry = { odd: oddValue, time: timestamp, platform: platform };
-
             history.push(entry);
             let twentyMinsAgo = timestamp - (20 * 60 * 1000);
             history = history.filter(h => h.time > twentyMinsAgo);
@@ -232,92 +246,17 @@
             let resultOdd = "WAIT";
             let statusColor = "var(--vip)";
             let msg = "ANALYZING MARKET...";
-            let winRate = 94.2;
 
             if (history.length < 5) {
-                msg = "LOW DATA - WIN RATE 45%";
-                resultOdd = "ADD DATA"; statusColor = "gray"; winRate = 45;
-            } else if (ultraOdds && (rounds % 5 === 0)) {
-                msg = "NEXT HIGH ODD TIME (50+)"; resultOdd = "50.00x"; statusColor = "var(--pink)";
-            } else if (superOdds && rounds > 24) {
-                msg = "NOW BIG WIN TIME 35+"; resultOdd = "35.00x"; statusColor = "var(--pink)";
-            } else if (history.some(h => h.odd >= 5 && h.odd <= 9)) {
-                msg = "20X BIG WIN TIME"; resultOdd = "WAIT 3 MIN"; statusColor = "var(--vip)";
-            } else if (lowOdds > highOdds) {
-                msg = "WIN TIME - SECURE ENTRY";
-                resultOdd = (Math.random() * (4.5 - 2.1) + 2.1).toFixed(2) + "x"; statusColor = "var(--win)";
-            } else if (highOdds > lowOdds) {
-                msg = "LOSS TIME DETECTED"; resultOdd = "WAIT TIME"; statusColor = "var(--loss)";
-            } else {
-                msg = "WAIT FOR GOOD SIGNAL"; resultOdd = "NOT BAD"; statusColor = "var(--vip)";
-            }
-
-            valEl.innerText = resultOdd;
-            valEl.style.color = statusColor;
-            valEl.style.fontSize = resultOdd.length > 6 ? "22px" : "55px";
-            msgEl.innerText = msg;
-            msgEl.style.color = statusColor;
-            document.getElementById('wRate').innerText = winRate + "%";
-
-            setTimeout(() => { document.getElementById('fOverlay').style.display = 'flex'; }, 3000);
-        }
-
-        // --- 🟢 CORE FUNCTIONS ---
-        function submitRes(t) {
-            if(!vip) {
-                rounds -= 10; if(rounds < 0) rounds = 0;
-                free = Math.floor(rounds / 10);
-                document.getElementById('tRounds').innerText = rounds;
-            }
-            document.getElementById('fOverlay').style.display = 'none';
-            document.getElementById('realSigArea').style.display = 'none';
-            document.getElementById('sampleArea').style.display = 'block';
-            updateUnlockState();
-        }
-
-        function verifyKey() {
-            let k = document.getElementById('vKey').value;
-            db.ref('keys/' + k).once('value', s => {
-                if(s.exists() && s.val().expiry > new Date().getTime()) {
-                    vip = true; updateUnlockState(); alert("VIP ACTIVE ⭐");
-                } else { alert("Invalid or Expired!"); }
-            });
-        }
-
-        function calculateBets() {
-            let cap = document.getElementById('capitalInput').value;
-            if(cap > 0) {
-                document.getElementById('bet1Display').innerText = (cap * 0.05).toFixed(2);
-                document.getElementById('bet2Display').innerText = (cap * 0.02).toFixed(2);
-            }
-        }
-
-        function updateUnlockState() {
-            if(vip || free > 0) {
-                document.getElementById('lockUI').style.display = 'none';
-                document.getElementById('unlockUI').style.display = 'block';
-                document.getElementById('sLeft').innerText = "Signals Available: " + (vip ? "UNLIMITED" : free);
-            } else {
-                document.getElementById('lockUI').style.display = 'block';
-                document.getElementById('unlockUI').style.display = 'none';
-            }
-        }
-
-        function openAdmin() { if(prompt("Admin Pass:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block'; }
-        function updateGlobalMsg() { db.ref('globalConfig').update({ message: document.getElementById('adminMsg').value }); }
-        function generateKey() {
-            let d = document.getElementById('keyDuration').value;
-            let k = "NXS-" + Math.random().toString(36).substr(2, 9).toUpperCase();
-            let exp = new Date().getTime() + (d * 24 * 60 * 60 * 1000);
-            db.ref('keys/' + k).set({ expiry: exp }).then(() => { document.getElementById('newKeyOut').innerText = "Key: " + k; });
-        }
-
-        function showLiveStatus(m) { document.getElementById('liveFeeder').innerText = m; }
-
-        db.ref('globalConfig/message').on('value', s => {
-            const m = s.val(); const b = document.getElementById('displayMsg');
-            if(m) { b.innerText = "📢 " + m; b.style.display = "block"; } else { b.style.display = "none"; }
-        });
-    </script>
-</body>
-</html>
+                msg = "TRY TO NEXT AFTER THE ADD DATA";
+                resultOdd = "LOW DATA"; 
+                statusColor = "gray"; 
+                valEl.innerText = resultOdd;
+                msgEl.innerText = msg;
+                valEl.style.color = statusColor;
+                msgEl.style.color = statusColor;
+                valEl.style.fontSize = "35px";
+                
+                setTimeout(() => {
+                    document.getElementById('realSigArea').style.display = 'none';
+                    document.getElementById('sampleArea').style
