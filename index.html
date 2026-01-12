@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | MATRIX ANALYSIS V15.2</title>
+    <title>NEXUS AI | ULTIMATE MATRIX V15.2</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -15,28 +15,21 @@
         h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
         .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.2s; }
         .btn-prime:active { transform: scale(0.98); }
-        
         .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; }
-        .btn-wa { background: rgba(37, 211, 102, 0.1); border: 1px solid var(--wa); color: var(--wa); border: 1px solid var(--wa); }
-        .btn-tg { background: rgba(0, 136, 204, 0.1); border: 1px solid var(--tg); color: var(--tg); border: 1px solid var(--tg); }
-
+        .btn-wa { border: 1px solid var(--wa); color: var(--wa); }
+        .btn-tg { border: 1px solid var(--tg); color: var(--tg); }
         .btn-download { background: linear-gradient(45deg, #ff0055, #ffcc00); color: black; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-
         .global-msg { background: rgba(255, 69, 0, 0.2); border: 1px solid var(--admin); padding: 10px; border-radius: 10px; margin-bottom: 15px; display: none; font-size: 13px; color: #fff; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; }
-        
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; font-weight: bold; }
         .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
-
         .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; padding: 20px; box-sizing: border-box; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid #1a1e26; }
-
-        .chart-container { height: 180px; width: 100%; margin-top: 10px; }
+        .chart-container { height: 180px; width: 100%; margin-top: 10px; position: relative; }
         .live-scroll { height: 30px; overflow: hidden; background: #000; border-radius: 5px; border: 1px solid #222; margin-top: 10px; font-size: 10px; line-height: 30px; color: var(--neon); }
-
         #adminPanel { display: none; background: #000; border: 2px dashed var(--admin); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; }
         .admin-btn { background: var(--admin); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: bold; }
     </style>
@@ -51,45 +44,35 @@
         <a href="https://t.me/NEXUS_ADMIN" class="btn-support btn-tg" target="_blank">🔵 CONTACT ADMIN</a>
     </div>
 
-    <a href="#" class="btn-download" onclick="alert('Starting Download...')">⬇️ DOWNLOAD ANDROID APP</a>
+    <a href="#" class="btn-download" onclick="alert('Downloading...')">⬇️ DOWNLOAD APK</a>
 
     <div style="max-width:500px; margin:auto;">
-        
         <div class="stat-grid">
             <div class="stat-box">Users Online: <b id="uOnline">0</b></div>
             <div class="stat-box">Real Win Rate: <b id="wRate" style="color:var(--win);">0%</b></div>
         </div>
 
-        <div class="live-scroll" id="liveFeeder">Scanning Patterns...</div>
+        <div class="live-scroll" id="liveFeeder">System connected...</div>
 
         <div class="card">
             <div class="f-overlay" id="fOverlay">
                 <h3 style="margin-bottom:10px;">VERIFY PREVIOUS ROUND</h3>
-                <input type="number" id="lastRoundInput" placeholder="Enter last round odd (Ex: 1.50)" step="0.01">
+                <input type="number" id="lastRoundInput" placeholder="Enter last round odd" step="0.01">
                 <div style="display:flex; gap:10px; width:100%;">
                     <button class="btn-prime" style="background:var(--win); color:black; margin:0;" onclick="submitRes('win')">WIN ✅</button>
                     <button class="btn-prime" style="background:var(--loss); margin:0;" onclick="submitRes('loss')">LOSS ❌</button>
                 </div>
             </div>
-
             <div class="signal-box">
-                <div id="sampleArea">
-                    <p id="sampleOdds">1.50x</p>
-                    <p style="font-size:10px; color:var(--loss);">SAMPLE DATA</p>
-                </div>
-                <div id="realSigArea" style="display:none;">
-                    <p id="sigVal">---</p>
-                    <p style="font-size:12px; color:var(--win);" id="sigMsg">AI ANALYSIS ACTIVE</p>
-                </div>
+                <div id="sampleArea"><p id="sampleOdds">1.50x</p></div>
+                <div id="realSigArea" style="display:none;"><p id="sigVal">---</p><p style="font-size:12px; color:var(--win);" id="sigMsg">AI ANALYSIS ACTIVE</p></div>
             </div>
-
             <div id="lockUI">
-                <p style="font-size:11px; color:#666; margin-top:10px;">ADD 10PASS ODD UNLOCK 01FREE SIGNAL</p>
+                <p style="font-size:11px; color:#666;">ADD 10PASS ODD UNLOCK 01FREE SIGNAL</p>
                 <input type="text" id="vKey" placeholder="ENTER VIP KEY">
                 <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
                 <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
             </div>
-
             <div id="unlockUI" style="display:none;">
                 <p id="sLeft" style="color:var(--vip); font-weight:bold;">Signals: 0</p>
                 <button class="btn-prime" id="genBtn" onclick="genSig()">START AUTO-ENGINE</button>
@@ -97,112 +80,128 @@
         </div>
 
         <div class="card">
-            <h3 style="font-size: 12px; margin: 0;">PROBABILITY CHART</h3>
+            <h3 style="font-size: 12px; margin: 0;">SIGNAL PROBABILITY CHART</h3>
             <div class="chart-container"><canvas id="winChart"></canvas></div>
             <div class="stat-grid" style="font-size: 11px;">
-                <div style="color:var(--win)">Global Wins: <span id="tWinCount">0</span></div>
-                <div style="color:var(--loss)">Global Loss: <span id="tLossCount">0</span></div>
+                <div style="color:var(--win)">Total Wins: <span id="tWinCount">0</span></div>
+                <div style="color:var(--loss)">Total Loss: <span id="tLossCount">0</span></div>
             </div>
         </div>
 
         <div class="card">
-            <h3>DATA MINING ENGINE</h3>
+            <h3>SIGNAL MINING</h3>
             <div style="display:flex; gap:5px; margin-bottom:10px;">
                 <button id="p1btn" class="btn-prime" style="flex:1; padding:10px; font-size:10px;" onclick="setPlat('1XBET')">1XBET</button>
                 <button id="p2btn" class="btn-prime" style="flex:1; padding:10px; font-size:10px; background:#111;" onclick="setPlat('OTHERS')">OTHERS</button>
             </div>
             <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.25, 4.20)">
-            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">MINE SYSTEM DATA</button>
-            <p style="margin-top:10px; font-size:12px;">Data Matrix: <span id="tRounds" style="color:var(--neon);">0</span></p>
+            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">MINE DATA</button>
+            <p style="margin-top:10px; font-size:12px;">Matrix Rounds: <span id="tRounds" style="color:var(--neon);">0</span></p>
         </div>
 
         <div class="card">
             <h3>MONEY MANAGEMENT</h3>
             <input type="number" id="capitalInput" placeholder="ENTER YOUR CAPITAL" oninput="calculateBets()">
             <div class="stat-grid">
-                <div class="stat-box">
-                    <p style="font-size: 10px; color: var(--win); margin:0;">SAFE BET (5%)</p>
-                    <h2 id="bet1Display" style="margin:5px 0; font-size:20px;">0.00</h2>
-                </div>
-                <div class="stat-box">
-                    <p style="font-size: 10px; color: var(--pink); margin:0;">RECOVER BET (2%)</p>
-                    <h2 id="bet2Display" style="margin:5px 0; font-size:20px;">0.00</h2>
-                </div>
+                <div class="stat-box"><p style="font-size: 10px; color: var(--win); margin:0;">SAFE BET (5%)</p><h2 id="bet1Display" style="margin:5px 0; font-size:20px;">0.00</h2></div>
+                <div class="stat-box"><p style="font-size: 10px; color: var(--pink); margin:0;">RECOVER (2%)</p><h2 id="bet2Display" style="margin:5px 0; font-size:20px;">0.00</h2></div>
             </div>
         </div>
 
         <div id="adminPanel" class="card">
-            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN COMMAND CENTER</h3>
-            <input type="text" id="adminMsg" placeholder="Broadcast Message">
-            <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE SYSTEM MESSAGE</button>
-            <p style="font-size: 12px; margin-top: 15px;">🔑 VIP Access Key Gen:</p>
-            <select id="keyDuration">
-                <option value="1">1 Day Access</option>
-                <option value="7">7 Days Access</option>
-                <option value="30">30 Days Access</option>
-                <option value="365">1 Year Access</option>
-            </select>
-            <button class="admin-btn" onclick="generateKey()">GENERATE KEY</button>
-            <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 5px;"></div>
+            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN CONTROL</h3>
+            <input type="text" id="adminMsg" placeholder="System Message">
+            <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE MSG</button>
+            <p style="font-size: 12px; margin-top: 15px;">🔑 GLOBAL KEY GEN (EXPIRY IN HOURS):</p>
+            <input type="number" id="hourInput" placeholder="Expire in (Hours)">
+            <button class="admin-btn" onclick="generateGlobalKey()">GENERATE GLOBAL KEY</button>
+            <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 5px; word-break: break-all;"></div>
         </div>
     </div>
 
     <script>
-        // 1. Core Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM",
-            authDomain: "nexus-ai-a5dd7.firebaseapp.com",
-            databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com",
-            projectId: "nexus-ai-a5dd7",
-            storageBucket: "nexus-ai-a5dd7.firebasestorage.app",
-            messagingSenderId: "754990038696",
-            appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyD940gcjyowMQhMerqOPcFHIGahCybMxPM", authDomain: "nexus-ai-a5dd7.firebaseapp.com", databaseURL: "https://nexus-ai-a5dd7-default-rtdb.firebaseio.com", projectId: "nexus-ai-a5dd7", storageBucket: "nexus-ai-a5dd7.firebasestorage.app", messagingSenderId: "754990038696", appId: "1:754990038696:web:45b40bc9d02e890e8a0c9d" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 2. Global Intelligence Variables
-        let rounds = 0, free = 0, vip = false, platform = "1XBET";
-        let history = []; 
-        const samples = ["1.10x", "2.50x", "1.20x", "15.4x", "1.35x", "500x"];
-        let sIdx = 0;
+        let rounds = 0, free = 0, vip = false, platform = "1XBET", history = [];
+        const samples = ["1.10x", "2.50x", "1.30x", "10.4x", "1.20x", "500x"]; let sIdx = 0;
 
-        // 3. Real-time User Tracking
-        let userHash = Math.random().toString(36).substr(2, 5);
-        let uRef = db.ref('presence/' + userHash);
-        uRef.set(true); uRef.onDisconnect().remove();
+        // CHART
+        const ctx = document.getElementById('winChart').getContext('2d');
+        const winChart = new Chart(ctx, { type: 'line', data: { labels: ['T1','T2','T3','T4','T5'], datasets: [{ data: [90, 95, 92, 98, 95], borderColor: '#00f2ff', fill: true }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+
+        // ONLINE & STATS
+        let uPresence = db.ref('presence/' + Math.random().toString(36).substr(2, 5)); uPresence.set(true); uPresence.onDisconnect().remove();
         db.ref('presence').on('value', s => { document.getElementById('uOnline').innerText = s.numChildren(); });
-        
         db.ref('stats').on('value', s => {
-            let d = s.val() || {win:0, loss:0};
-            document.getElementById('tWinCount').innerText = d.win;
-            document.getElementById('tLossCount').innerText = d.loss;
-            let r = (d.win+d.loss) > 0 ? (d.win/(d.win+d.loss)*100).toFixed(1) : 0;
-            document.getElementById('wRate').innerText = r + "%";
+            let d = s.val() || {win:0, loss:0}; document.getElementById('tWinCount').innerText = d.win; document.getElementById('tLossCount').innerText = d.loss;
+            let r = (d.win+d.loss)>0 ? (d.win/(d.win+d.loss)*100).toFixed(1) : 0; document.getElementById('wRate').innerText = r + "%";
         });
 
-        // 4. Sample Animation
-        setInterval(() => {
-            const el = document.getElementById('sampleOdds');
-            if(el && document.getElementById('sampleArea').style.display !== 'none') {
-                el.innerText = samples[sIdx]; sIdx = (sIdx + 1) % samples.length;
-            }
-        }, 1000);
+        setInterval(() => { if(document.getElementById('sampleArea').style.display !== 'none') { document.getElementById('sampleOdds').innerText = samples[sIdx]; sIdx = (sIdx + 1) % samples.length; } }, 1000);
 
-        // 5. Money Management Logic
+        // SYSTEM FUNCTIONS
         function calculateBets() {
             let cap = parseFloat(document.getElementById('capitalInput').value);
-            if(!isNaN(cap) && cap > 0) {
-                document.getElementById('bet1Display').innerText = (cap * 0.05).toFixed(2);
-                document.getElementById('bet2Display').innerText = (cap * 0.02).toFixed(2);
+            if(!isNaN(cap)) { document.getElementById('bet1Display').innerText = (cap*0.05).toFixed(2); document.getElementById('bet2Display').innerText = (cap*0.02).toFixed(2); }
+        }
+        function setPlat(p) { platform = p; document.getElementById('p1btn').style.background = p==='1XBET'?'':'#111'; document.getElementById('p2btn').style.background = p==='OTHERS'?'':'#111'; }
+        
+        function mine() {
+            let input = document.getElementById('mInput'); let val = parseFloat(input.value); if(isNaN(val)) return;
+            history.push({odd: val, time: Date.now()}); rounds++; document.getElementById('tRounds').innerText = rounds;
+            free = Math.floor(rounds/10); updateUnlockState(); input.value = "";
+        }
+
+        function genSig() {
+            if(!vip && free <= 0) return;
+            document.getElementById('sampleArea').style.display='none'; document.getElementById('realSigArea').style.display='block';
+            let v = document.getElementById('sigVal'); let m = document.getElementById('sigMsg');
+            if(history.length < 5) {
+                v.innerText = "LOW DATA"; m.innerText = "TRY NEXT AFTER ADD DATA";
+                setTimeout(() => { document.getElementById('realSigArea').style.display='none'; document.getElementById('sampleArea').style.display='block'; }, 3000);
             } else {
-                document.getElementById('bet1Display').innerText = "0.00";
-                document.getElementById('bet2Display').innerText = "0.00";
+                let low = history.filter(h => h.odd < 2).length; let high = history.filter(h => h.odd >= 2).length;
+                let res = (low > high) ? (Math.random()*(4.1-2.1)+2.1).toFixed(2) : (Math.random()*(1.9-1.1)+1.1).toFixed(2);
+                v.innerText = res + "x"; m.innerText = (low > high) ? "100% SAFE WIN" : "RISKY TIME"; v.style.color = (low > high)?"var(--win)":"var(--loss)";
+                setTimeout(() => { document.getElementById('fOverlay').style.display='flex'; }, 3500);
             }
         }
 
-        // 6. Mining & Data Storage
-        function setPlat(p) {
-            platform = p;
-            document.getElementById('p1btn').style.background = p === '1XBET' ? '' : '#111';
-            document.getElementById('p2btn').style.background = p === 'OTHERS
+        function submitRes(t) {
+            let l = parseFloat(document.getElementById('lastRoundInput').value); if(isNaN(l)) return alert("Add last odd!");
+            history.push({odd: l, time: Date.now()}); db.ref('stats/'+t).transaction(c => (c||0)+1);
+            if(!vip) { rounds -= 10; rounds = Math.max(0, rounds); free = Math.floor(rounds/10); }
+            document.getElementById('fOverlay').style.display='none'; document.getElementById('lastRoundInput').value=""; document.getElementById('tRounds').innerText = rounds;
+            updateUnlockState(); if(vip || free > 0) genSig();
+        }
+
+        function verifyKey() {
+            let k = document.getElementById('vKey').value;
+            db.ref('keys/'+k).once('value', s => {
+                if(s.exists() && s.val().expiry > Date.now()) { vip = true; updateUnlockState(); alert("VIP ACTIVE!"); } else alert("Invalid Key!");
+            });
+        }
+
+        function updateUnlockState() {
+            if(vip || free > 0) { document.getElementById('lockUI').style.display='none'; document.getElementById('unlockUI').style.display='block'; document.getElementById('sLeft').innerText = "Signals: "+(vip?"UNLIMITED":free); }
+            else { document.getElementById('lockUI').style.display='block'; document.getElementById('unlockUI').style.display='none'; }
+        }
+
+        function openAdmin() { if(prompt("Auth:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block'; }
+        function updateGlobalMsg() { db.ref('globalConfig').update({ message: document.getElementById('adminMsg').value }); }
+        
+        function generateGlobalKey() {
+            let h = parseInt(document.getElementById('hourInput').value) || 1;
+            let k = "FREE-"+Math.random().toString(36).substr(2,6).toUpperCase();
+            db.ref('keys/'+k).set({ expiry: Date.now() + (h*3600000) }).then(() => document.getElementById('newKeyOut').innerText = "Global Key: " + k);
+        }
+
+        db.ref('globalConfig/message').on('value', s => {
+            const m = s.val(); const b = document.getElementById('displayMsg');
+            if(m) { b.innerText = "📢 " + m; b.style.display = "block"; } else b.style.display = "none";
+        });
+    </script>
+</body>
+</html>
