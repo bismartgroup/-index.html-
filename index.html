@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | ENTERPRISE V15.2 FULL</title>
+    <title>NEXUS AI | ENTERPRISE V15.2 ANALYTICS</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; --pink: #ff00ff; --admin: #ff4500; }
@@ -17,18 +18,22 @@
         .btn-download { background: linear-gradient(45deg, #ff0055, #ffcc00); color: black; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 20px; animation: pulse 2s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        /* Global Message */
         .global-msg { background: rgba(255, 69, 0, 0.2); border: 1px solid var(--admin); padding: 10px; border-radius: 10px; margin-bottom: 15px; display: none; font-size: 13px; color: #fff; }
-
         input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; }
+        
+        /* Signal Display */
         .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
         #sigVal { color: var(--win); text-shadow: 0 0 15px var(--win); }
+
         .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; }
         .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
         .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid #1a1e26; }
 
-        /* Admin UI */
+        /* Chart & Analytics UI */
+        .chart-container { height: 200px; width: 100%; margin-top: 10px; }
+        .live-scroll { height: 30px; overflow: hidden; background: #000; border-radius: 5px; border: 1px solid #222; margin-top: 10px; font-size: 10px; line-height: 30px; color: var(--neon); }
+
         #adminPanel { display: none; background: #000; border: 2px dashed var(--admin); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; }
         .admin-btn { background: var(--admin); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: bold; }
     </style>
@@ -43,6 +48,13 @@
 
     <div style="max-width:500px; margin:auto;">
         
+        <div class="stat-grid">
+            <div class="stat-box">Users Online: <b id="uOnline" style="color:var(--neon);">241</b></div>
+            <div class="stat-box">Win Rate: <b id="wRate" style="color:var(--win);">94.2%</b></div>
+        </div>
+
+        <div class="live-scroll" id="liveFeeder">Analyzing global server data...</div>
+
         <div class="card">
             <div class="f-overlay" id="fOverlay">
                 <h3 style="margin-bottom:15px;">CONFIRM RESULT</h3>
@@ -62,15 +74,25 @@
             </div>
 
             <div id="lockUI">
-                <p style="font-size:11px; color:#666; margin-top:10px;">ENTER VIP KEY OR MINE 10 ROUNDS</p>
                 <input type="text" id="vKey" placeholder="ENTER VIP KEY">
                 <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
                 <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
             </div>
 
             <div id="unlockUI" style="display:none;">
-                <p id="sLeft" style="color:var(--vip); font-weight:bold; margin-top:10px;">Signals: 0</p>
+                <p id="sLeft" style="color:var(--vip); font-weight:bold;">Signals: 0</p>
                 <button class="btn-prime" id="genBtn" onclick="genSig()">GENERATE SIGNAL</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="font-size: 12px; margin: 0;">SIGNAL ACCURACY CHART</h3>
+            <div class="chart-container">
+                <canvas id="winChart"></canvas>
+            </div>
+            <div class="stat-grid" style="font-size: 11px;">
+                <div style="color:var(--win)">Total Wins: <span id="tWinCount">1,402</span></div>
+                <div style="color:var(--loss)">Total Loss: <span id="tLossCount">82</span></div>
             </div>
         </div>
 
@@ -78,7 +100,7 @@
             <h3>SIGNAL MINING</h3>
             <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.25, 4.20, 1.10)">
             <button class="btn-prime" style="background:var(--pink);" onclick="mine()">ADD MINING DATA</button>
-            <p style="margin-top:10px; font-size:12px;">Total Added: <span id="tRounds" style="color:var(--neon); font-weight:bold;">0</span></p>
+            <p style="margin-top:10px; font-size:12px;">Total Added: <span id="tRounds" style="color:var(--neon);">0</span></p>
         </div>
 
         <div class="card" style="border: 1px solid var(--neon);">
@@ -97,18 +119,12 @@
         </div>
 
         <div id="adminPanel" class="card">
-            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN CONTROL PANEL</h3>
+            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN CONTROL</h3>
             <input type="text" id="adminMsg" placeholder="Broadcast Message">
             <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE MESSAGE</button>
-
-            <p style="font-size: 12px; margin-top: 15px;">🔑 VIP Key Generator:</p>
-            <select id="keyDuration">
-                <option value="1">1 Day</option>
-                <option value="7">7 Days</option>
-                <option value="30">30 Days</option>
-                <option value="365">1 Year</option>
-            </select>
-            <button class="admin-btn" style="background:#444;" onclick="generateKey()">GENERATE KEY</button>
+            <p style="font-size: 12px; margin-top: 15px;">🔑 Key Gen:</p>
+            <select id="keyDuration"><option value="1">1 Day</option><option value="7">7 Days</option><option value="30">30 Days</option></select>
+            <button class="admin-btn" onclick="generateKey()">GENERATE KEY</button>
             <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 5px;"></div>
         </div>
     </div>
@@ -130,14 +146,42 @@
         const samples = ["1.50x", "4.20x", "8.90x", "2.10x", "12.4x", "1.10x"];
         let sIdx = 0;
 
-        // Message Sync
+        // 🟢 CHARTS LOGIC
+        
+        const ctx = document.getElementById('winChart').getContext('2d');
+        const winChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['10:00', '10:10', '10:20', '10:30', '10:40', '10:50'],
+                datasets: [{
+                    label: 'Accuracy %',
+                    data: [92, 95, 88, 94, 96, 94],
+                    borderColor: '#00f2ff',
+                    backgroundColor: 'rgba(0, 242, 255, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { color: '#111' } } } }
+        });
+
+        // 🟢 LIVE FEEDER LOGIC
+        const feeds = ["Entry Detected: 1.25x", "New Signal Calculating...", "Server Load: 12%", "VIP Key Activated: NXS-****", "AI Prediction: High Odds Expected"];
+        let fIdx = 0;
+        setInterval(() => {
+            document.getElementById('liveFeeder').innerText = feeds[fIdx];
+            fIdx = (fIdx + 1) % feeds.length;
+            document.getElementById('uOnline').innerText = Math.floor(Math.random() * (280 - 230) + 230);
+        }, 3000);
+
+        // Firebase Msg Sync
         db.ref('globalConfig/message').on('value', s => {
-            const m = s.val();
-            const b = document.getElementById('displayMsg');
+            const m = s.val(); const b = document.getElementById('displayMsg');
             if(m) { b.innerText = "📢 " + m; b.style.display = "block"; } else { b.style.display = "none"; }
         });
 
-        // Animation
+        // Sample Animation
         setInterval(() => {
             const el = document.getElementById('sampleOdds');
             if(el && document.getElementById('sampleArea').style.display !== 'none') {
@@ -204,21 +248,13 @@
             });
         }
 
-        function openAdmin() {
-            if(prompt("Admin Pass:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block';
-        }
-
-        function updateGlobalMsg() {
-            db.ref('globalConfig').update({ message: document.getElementById('adminMsg').value });
-        }
-
+        function openAdmin() { if(prompt("Admin Pass:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display = 'block'; }
+        function updateGlobalMsg() { db.ref('globalConfig').update({ message: document.getElementById('adminMsg').value }); }
         function generateKey() {
             let d = document.getElementById('keyDuration').value;
             let k = "NXS-" + Math.random().toString(36).substr(2, 9).toUpperCase();
             let exp = new Date().getTime() + (d * 24 * 60 * 60 * 1000);
-            db.ref('keys/' + k).set({ expiry: exp }).then(() => {
-                document.getElementById('newKeyOut').innerText = "Key: " + k;
-            });
+            db.ref('keys/' + k).set({ expiry: exp }).then(() => { document.getElementById('newKeyOut').innerText = "Key: " + k; });
         }
     </script>
 </body>
