@@ -3,38 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | V15.2 ULTIMATE FIXED</title>
+    <title>NEXUS AI | V15.2 ENTERPRISE</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; --pink: #ff00ff; }
+        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; --pink: #ff00ff; --admin: #ff4500; }
         body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; }
         .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
         h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
         .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         
-        /* Download Button Style */
-        .btn-download { 
-            background: linear-gradient(45deg, #ff0055, #ffcc00); 
-            color: black; 
-            padding: 10px 20px; 
-            border-radius: 50px; 
-            text-decoration: none; 
-            font-weight: bold; 
-            font-size: 12px; 
-            display: inline-block; 
-            margin-bottom: 20px;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
+        .btn-download { background: linear-gradient(45deg, #ff0055, #ffcc00); color: black; padding: 10px 20px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block; margin-bottom: 20px; animation: pulse 2s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
-        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; }
+        /* Admin Styles */
+        #adminPanel { display: none; background: #000; border: 2px dashed var(--admin); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; }
+        .admin-btn { background: var(--admin); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: bold; }
+        .global-msg { background: rgba(255, 69, 0, 0.2); border: 1px solid var(--admin); padding: 10px; border-radius: 10px; margin-bottom: 15px; display: none; font-size: 13px; color: #fff; }
+
+        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; }
         .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
         #sigVal { color: var(--win); text-shadow: 0 0 15px var(--win); }
@@ -47,9 +35,12 @@
 
     <h1 style="color:var(--neon);">NEXUS AI <span style="color:var(--vip);">V15.2</span></h1>
     
+    <div id="displayMsg" class="global-msg"></div>
+
     <a href="#" class="btn-download" onclick="alert('Starting Download...')">⬇️ DOWNLOAD ANDROID APP</a>
 
     <div style="max-width:500px; margin:auto;">
+        
         <div class="card">
             <div class="f-overlay" id="fOverlay">
                 <h3 style="margin-bottom:15px;">CONFIRM RESULT</h3>
@@ -72,6 +63,7 @@
                 <p style="font-size:11px; color:#666; margin-top:10px;">ENTER VIP KEY OR MINE 10 ROUNDS</p>
                 <input type="text" id="vKey" placeholder="ENTER VIP KEY">
                 <button class="btn-prime" onclick="verifyKey()">ACTIVATE VIP</button>
+                <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
             </div>
 
             <div id="unlockUI" style="display:none;">
@@ -101,6 +93,24 @@
                 </div>
             </div>
         </div>
+
+        <div id="adminPanel" class="card">
+            <h3 style="color:var(--admin); font-size: 14px;">🛠️ ADMIN CONTROL PANEL</h3>
+            
+            <p style="font-size: 12px;">📢 Broadcast Message:</p>
+            <input type="text" id="adminMsg" placeholder="Type message for all users">
+            <button class="admin-btn" onclick="updateGlobalMsg()">UPDATE MESSAGE</button>
+
+            <p style="font-size: 12px; margin-top: 15px;">🔑 VIP Key Generator:</p>
+            <select id="keyDuration">
+                <option value="1">1 Day</option>
+                <option value="7">7 Days</option>
+                <option value="30">30 Days (1 Month)</option>
+                <option value="365">1 Year</option>
+            </select>
+            <button class="admin-btn" style="background:#444;" onclick="generateKey()">GENERATE KEY</button>
+            <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 5px; word-break: break-all;"></div>
+        </div>
     </div>
 
     <script>
@@ -121,6 +131,18 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+
+        // 🟢 REAL-TIME DATA MONITORING
+        db.ref('globalConfig/message').on('value', (snapshot) => {
+            const msg = snapshot.val();
+            const msgBox = document.getElementById('displayMsg');
+            if(msg) {
+                msgBox.innerText = "📢 " + msg;
+                msgBox.style.display = "block";
+            } else {
+                msgBox.style.display = "none";
+            }
+        });
 
         function startSampleAnimation() {
             setInterval(() => {
@@ -192,16 +214,37 @@
             if(!key) return;
             db.ref('keys/' + key).once('value', s => {
                 if(s.exists()) {
-                    vip = true;
-                    document.getElementById('lockUI').style.display = 'none';
-                    document.getElementById('unlockUI').style.display = 'block';
-                    document.getElementById('sLeft').innerText = "Signals: VIP UNLIMITED";
-                    alert("VIP ACTIVE ⭐");
-                } else {
-                    alert("Invalid Key!");
-                }
+                    const data = s.val();
+                    const now = new Date().getTime();
+                    if(data.expiry > now) {
+                        vip = true;
+                        document.getElementById('lockUI').style.display = 'none';
+                        document.getElementById('unlockUI').style.display = 'block';
+                        document.getElementById('sLeft').innerText = "Signals: VIP ACTIVE";
+                        alert("VIP ACTIVE ⭐ Expires in: " + Math.round((data.expiry-now)/(1000*60*60*24)) + " days");
+                    } else {
+                        alert("Key Expired!");
+                    }
+                } else { alert("Invalid Key!"); }
             });
         }
-    </script>
-</body>
-</html>
+
+        // 🔴 ADMIN LOGIC
+        function openAdmin() {
+            let pass = prompt("Enter Admin Secret Key:");
+            if(pass === "NEXUSADMIN77") { // මෙතන ඔබේ රහස් මුරපදය මාරු කරන්න
+                document.getElementById('adminPanel').style.display = 'block';
+                window.scrollTo(0, document.body.scrollHeight);
+            } else { alert("Access Denied!"); }
+        }
+
+        function updateGlobalMsg() {
+            let m = document.getElementById('adminMsg').value;
+            db.ref('globalConfig').update({ message: m });
+            alert("Broadcast Updated!");
+        }
+
+        function generateKey() {
+            let days = document.getElementById('keyDuration').value;
+            let key = "NXS-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+            let expiry =
