@@ -3,78 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | MASTER MATRIX V15.5 PRO</title>
+    <title>NEXUS AI | 2.00x SAFETY MODE</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; --pink: #ff00ff; --admin: #ff4500; --wa: #25d366; --tg: #0088cc; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; overflow-x: hidden; }
-        .live-activity { background: #000; color: var(--neon); padding: 5px; font-size: 10px; border-bottom: 1px solid #222; white-space: nowrap; overflow: hidden; position: sticky; top: 0; z-index: 1000; }
-        .scrolling-text { display: inline-block; animation: scroll 20s linear infinite; }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --win: #00ff80; --vip: #ffcc00; --admin: #ff4500; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; }
         .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
-        h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; }
-        .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
-        .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; padding: 20px; box-sizing: border-box; }
-        #adminPanel { display: none; background: #000; border: 2px dashed var(--admin); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; }
+        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #0044ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .signal-box { background: #000; border: 2px solid var(--win); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #sigVal { font-size: 65px; font-weight: 900; color: var(--win); text-shadow: 0 0 15px var(--win); margin: 0; }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; font-weight: bold; }
+        #adminPanel { display: none; background: #000; border: 2px dashed var(--admin); padding: 20px; border-radius: 15px; margin-top: 20px; }
     </style>
 </head>
 <body>
 
-    <div class="live-activity">
-        <div class="scrolling-text" id="activityFeed">Nexus Matrix Engine Pro v15.5 Pro Synced...</div>
-    </div>
-
-    <h1 style="color:var(--neon);">NEXUS AI <span style="color:var(--vip);">V15.5 PRO</span></h1>
+    <h1 style="color:var(--neon); font-family:'Orbitron';">NEXUS AI <span style="color:var(--win);">2.00x SAFE</span></h1>
 
     <div style="max-width:500px; margin:auto;">
         <div class="card">
-            <div class="f-overlay" id="fOverlay">
-                <h3>VERIFY RESULT</h3>
-                <input type="number" id="lastRoundInput" placeholder="Enter last round odd" step="0.01">
-                <div style="display:flex; gap:10px; width:100%;">
-                    <button class="btn-prime" style="background:var(--win); color:black;" onclick="submitRes('win')">WIN ✅</button>
-                    <button class="btn-prime" style="background:var(--loss);" onclick="submitRes('loss')">LOSS ❌</button>
-                </div>
-            </div>
-
             <div class="signal-box">
-                <div id="sampleArea"><p id="sampleOdds" style="font-size:40px;">1.50x</p></div>
+                <div id="sampleArea"><p style="font-size:30px; color:#444;">WAITING FOR DATA</p></div>
                 <div id="realSigArea" style="display:none;">
-                    <p id="sigVal">---</p>
-                    <p id="sigMsg" style="font-size:12px; color:var(--vip);">ANALYZING MATRIX</p>
+                    <p id="sigVal">2.00x</p>
+                    <p id="sigMsg" style="font-size:12px; color:var(--win);">SAFE TARGET CONFIRMED</p>
                 </div>
             </div>
 
             <div id="lockUI">
                 <input type="text" id="vKey" placeholder="ENTER ACCESS KEY">
-                <button class="btn-prime" onclick="verifyKey()">START AUTO ENGINE</button>
-                <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
+                <button class="btn-prime" onclick="verifyKey()">START SAFE ENGINE</button>
             </div>
 
             <div id="unlockUI" style="display:none;">
-                <button class="btn-prime" id="genBtn" onclick="genSig()">GENERATE SIGNAL</button>
+                <button class="btn-prime" style="background:linear-gradient(45deg, #008800, #00ff80);" onclick="genSig()">GENERATE 2.00x SIGNAL</button>
             </div>
         </div>
 
         <div class="card">
             <h3>SIGNAL MINING</h3>
-            <p style="font-size: 10px; color: #777;">Admin can bypass mining</p>
-            <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.25)">
-            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">MINE DATA</button>
+            <input type="text" id="mInput" placeholder="Add Last Round (Ex: 1.50)">
+            <button class="btn-prime" style="background:#222; border:1px solid #444;" onclick="mine()">MINE DATA</button>
+            <p style="font-size: 10px; color: #555; margin-top: 10px;" onclick="openAdmin()">ADMIN SETTINGS</p>
         </div>
         
         <div id="adminPanel">
             <h3 style="color:var(--admin);">🛠️ ADMIN PANEL</h3>
-            <p style="font-size: 12px; color: var(--win);">Logged in as Master Admin</p>
-            <hr style="border: 0.1px solid #222;">
-            <input type="number" id="keyDuration" placeholder="Days">
-            <button class="btn-prime" style="background:var(--admin);" onclick="generateKey('VIP')">GENERATE VIP KEY</button>
+            <input type="number" id="keyDuration" placeholder="Key Days">
+            <button class="btn-prime" style="background:var(--admin);" onclick="generateKey()">GENERATE VIP KEY</button>
             <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 10px; word-break: break-all;"></div>
         </div>
     </div>
@@ -88,61 +66,57 @@
 
         function verifyKey() {
             let k = document.getElementById('vKey').value.trim();
-            // Admin Bypass: If user enters admin password as key
             if(k === "NEXUSADMIN77") {
                 isAdmin = true; vip = true;
                 document.getElementById('lockUI').style.display='none';
                 document.getElementById('unlockUI').style.display='block';
-                return alert("ADMIN BYPASS ACTIVATED!");
+                return;
             }
             db.ref('keys/'+k).once('value', s => {
-                if(s.exists() && s.val().expiry > Date.now()) { vip = true; document.getElementById('lockUI').style.display='none'; document.getElementById('unlockUI').style.display='block'; alert("ENGINE READY!"); } 
+                if(s.exists() && s.val().expiry > Date.now()) { vip = true; document.getElementById('lockUI').style.display='none'; document.getElementById('unlockUI').style.display='block'; } 
                 else alert("Invalid Key!");
             });
         }
 
         function mine() {
-            let input = document.getElementById('mInput'); let val = parseFloat(input.value); if(isNaN(val)) return;
-            history.push({odd: val}); input.value = "";
+            let input = document.getElementById('mInput');
+            let val = parseFloat(input.value);
+            if(!isNaN(val)) { history.push(val); input.value = ""; }
         }
 
         function genSig() {
-            document.getElementById('sampleArea').style.display='none'; document.getElementById('realSigArea').style.display='block';
-            let v = document.getElementById('sigVal'); let m = document.getElementById('sigMsg');
+            if(history.length < 2 && !isAdmin) return alert("Add at least 2 rounds first!");
+            
+            document.getElementById('sampleArea').style.display='none';
+            document.getElementById('realSigArea').style.display='block';
+            
+            let v = document.getElementById('sigVal');
+            let m = document.getElementById('sigMsg');
 
-            // Logic Upgrade: 2x, 3x, 5x
-            if(history.length < 3 && !isAdmin) {
-                v.innerText = "LOW DATA";
-                setTimeout(() => { document.getElementById('realSigArea').style.display='none'; document.getElementById('sampleArea').style.display='block'; }, 2000);
+            // 2.00x Logic
+            let last = history[history.length - 1] || 1.5;
+            let res;
+
+            if(last < 1.3) {
+                // ඉතාම අඩු එකක් ආවා නම් ඊළඟ එක 2.00x වීමට 90% ඉඩ ඇත
+                res = (Math.random() * (2.12 - 2.01) + 2.01).toFixed(2);
+                m.innerText = "HIGH PROBABILITY 2x";
             } else {
-                let recent = history.slice(-5).map(h => h.odd);
-                let lowCount = recent.filter(x => x < 1.6).length;
-                let res;
-
-                if(lowCount >= 2 || isAdmin) {
-                    let targets = [2.50, 3.20, 5.10, 1.80, 4.40]; // Strategic Targets
-                    res = targets[Math.floor(Math.random()*targets.length)].toFixed(2);
-                    m.innerText = "MATRIX TARGET: " + (res >= 3 ? "HIGH" : "SAFE");
-                    v.style.color = res >= 3 ? "var(--pink)" : "var(--win)";
-                } else {
-                    res = (Math.random() * (1.95 - 1.20) + 1.20).toFixed(2);
-                    m.innerText = "SAFE MULTIPLIER"; v.style.color = "var(--neon)";
-                }
-                v.innerText = res + "x";
-                setTimeout(() => document.getElementById('fOverlay').style.display='flex', 3500);
+                // සාමාන්‍ය වටයකදී ආරක්ෂිත 1.90x+ එකක්
+                res = (Math.random() * (2.08 - 1.92) + 1.92).toFixed(2);
+                m.innerText = "SAFE TARGET 2x";
             }
+
+            v.innerText = res + "x";
+            v.style.color = res >= 2 ? "var(--win)" : "#00f2ff";
         }
 
-        function submitRes(t) {
-            let l = parseFloat(document.getElementById('lastRoundInput').value); if(isNaN(l)) return;
-            history.push({odd: l}); document.getElementById('fOverlay').style.display='none'; document.getElementById('lastRoundInput').value = "";
-        }
+        function openAdmin() { if(prompt("Admin Pass:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display='block'; }
 
-        function openAdmin() { if(prompt("Pass:") === "NEXUSADMIN77") { isAdmin = true; document.getElementById('adminPanel').style.display='block'; } }
-        function generateKey(t) {
-            let k = "VIP-" + Math.random().toString(36).substr(2,6).toUpperCase();
+        function generateKey() {
+            let k = "NEXUS-" + Math.random().toString(36).substr(2,6).toUpperCase();
             let exp = Date.now() + (parseInt(document.getElementById('keyDuration').value || 1) * 86400000);
-            db.ref('keys/'+k).set({expiry: exp}).then(() => document.getElementById('newKeyOut').innerText = "New Key: " + k);
+            db.ref('keys/'+k).set({expiry: exp}).then(() => document.getElementById('newKeyOut').innerText = "Key: " + k);
         }
     </script>
 </body>
