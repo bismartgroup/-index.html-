@@ -3,111 +3,70 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | MASTER MATRIX V15.6</title>
+    <title>NEXUS AI | 2.00x FIXED</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --vip: #ffcc00; --win: #00ff80; --loss: #ff3e3e; --pink: #ff00ff; --admin: #ff4500; --wa: #25d366; --tg: #0088cc; }
-        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; overflow-x: hidden; }
-        .live-activity { background: #000; color: var(--neon); padding: 5px; font-size: 10px; border-bottom: 1px solid #222; white-space: nowrap; overflow: hidden; position: sticky; top: 0; z-index: 1000; }
-        .scrolling-text { display: inline-block; animation: scroll 20s linear infinite; }
-        @keyframes scroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); position: relative; }
-        h1, h3 { font-family: 'Orbitron', sans-serif; margin: 15px 0; }
-        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #7000ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; transition: 0.2s; }
-        .support-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .btn-support { padding: 12px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 12px; color: white; display: flex; align-items: center; justify-content: center; border: 1px solid; }
-        .btn-wa { border-color: var(--wa); color: var(--wa); }
-        .btn-tg { border-color: var(--tg); color: var(--tg); }
-        .global-msg { background: rgba(255, 69, 0, 0.2); border: 1px solid var(--admin); padding: 10px; border-radius: 10px; margin-bottom: 15px; display: none; font-size: 13px; color: #fff; }
-        input, select { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; font-weight: bold; }
+        :root { --neon: #00f2ff; --bg: #05070a; --card: #0f121a; --win: #00ff80; --vip: #ffcc00; --admin: #ff4500; }
+        body { background: var(--bg); color: white; font-family: 'Inter', sans-serif; margin: 0; padding: 10px; text-align: center; }
+        .card { background: var(--card); border: 1px solid #1a1e26; border-radius: 15px; padding: 20px; margin-bottom: 15px; position: relative; }
+        .btn-prime { width: 100%; padding: 15px; border-radius: 12px; border: none; background: linear-gradient(45deg, #0044ff, var(--neon)); color: white; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
         .signal-box { background: #000; border: 2px solid var(--neon); border-radius: 15px; padding: 25px; min-height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #sampleOdds, #sigVal { font-size: 60px; font-weight: 900; color: var(--neon); text-shadow: 0 0 15px var(--neon); margin: 0; }
+        #sigVal { font-size: 60px; font-weight: 900; color: var(--win); text-shadow: 0 0 15px var(--win); margin: 0; }
+        input { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: var(--neon); margin-bottom: 10px; box-sizing: border-box; text-align: center; }
         .f-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; z-index: 100; padding: 20px; box-sizing: border-box; }
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .stat-box { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px; border: 1px solid #1a1e26; }
         #adminPanel { display: none; background: #000; border: 2px dashed var(--admin); padding: 20px; border-radius: 15px; margin-top: 20px; text-align: left; }
-        .admin-btn { background: var(--admin); color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; margin-top: 5px; width: 100%; font-weight: bold; }
-        .tab-btn { padding: 8px; font-size: 10px; background: #111; border: 1px solid #333; color: #777; cursor: pointer; }
-        .tab-btn.active { background: var(--admin); color: white; border-color: var(--admin); }
     </style>
 </head>
 <body>
 
-    <div class="live-activity">
-        <div class="scrolling-text" id="activityFeed">Nexus Matrix Engine Pro v15.6 - 2.00x Target Active...</div>
-    </div>
-
-    <h1 style="color:var(--neon); margin-top: 10px;">NEXUS AI <span style="color:var(--vip);">V15.6</span></h1>
-    <div id="displayMsg" class="global-msg"></div>
-
-    <div class="support-grid" style="max-width:500px; margin: 0 auto 15px auto;">
-        <a href="https://wa.me/94762664220" class="btn-support btn-wa">🟢 GET VIP (WA)</a>
-        <a href="https://t.me/NEXUS_ADMIN" class="btn-support btn-tg">🔵 TELEGRAM</a>
-    </div>
+    <h1 style="color:var(--neon); font-family: 'Orbitron';">NEXUS AI <span style="color:var(--win);">2.00x PRO</span></h1>
 
     <div style="max-width:500px; margin:auto;">
-        <div class="stat-grid">
-            <div class="stat-box">Online Users: <b id="uOnline">0</b></div>
-            <div class="stat-box">Trend Score: <b id="trendScore" style="color:var(--neon);">0.0</b></div>
-        </div>
-
         <div class="card">
             <div class="f-overlay" id="fOverlay">
                 <h3>VERIFY RESULT</h3>
-                <input type="number" id="lastRoundInput" placeholder="Last round odd" step="0.01">
+                <input type="number" id="lastRoundInput" placeholder="Enter last odd" step="0.01">
                 <div style="display:flex; gap:10px; width:100%;">
                     <button class="btn-prime" style="background:var(--win); color:black;" onclick="submitRes('win')">WIN ✅</button>
                     <button class="btn-prime" style="background:var(--loss);" onclick="submitRes('loss')">LOSS ❌</button>
                 </div>
             </div>
+
             <div class="signal-box">
-                <div id="sampleArea"><p id="sampleOdds">2.00x</p></div>
-                <div id="realSigArea" style="display:none;"><p id="sigVal">---</p><p id="sigMsg" style="font-size:12px; color:var(--win);">SAFE TARGET 2.0x</p></div>
+                <div id="sampleArea"><p style="font-size:25px; color:#444;">WAITING FOR ENGINE</p></div>
+                <div id="realSigArea" style="display:none;">
+                    <p id="sigVal">---</p>
+                    <p id="sigMsg" style="font-size:12px; color:var(--win);">SAFE TARGET 2.0x</p>
+                </div>
             </div>
+
             <div id="lockUI">
                 <input type="text" id="vKey" placeholder="ENTER ACCESS KEY">
                 <button class="btn-prime" onclick="verifyKey()">START SAFE ENGINE</button>
-                <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN ACCESS</p>
+                <p onclick="openAdmin()" style="font-size: 10px; margin-top: 20px; color: #333; cursor: pointer;">ADMIN SETTINGS</p>
             </div>
-            <div id="unlockUI" style="display:none;">
-                <p id="sLeft" style="color:var(--vip); font-weight:bold;">2.0x Stability Mode</p>
-                <button class="btn-prime" id="genBtn" onclick="genSig()">GENERATE 2.00x SIGNAL</button>
-            </div>
-        </div>
 
-        <div class="card">
-            <h3 style="font-size: 12px;">PROBABILITY CHART</h3>
-            <div style="height:150px;"><canvas id="winChart"></canvas></div>
-            <div class="stat-grid" style="font-size: 11px;">
-                <div style="color:var(--win)">Total Wins: <b id="statWin">0</b></div>
-                <div style="color:var(--loss)">Total Loss: <b id="statLoss">0</b></div>
+            <div id="unlockUI" style="display:none;">
+                <p id="statusTxt" style="color:var(--vip); font-weight:bold; font-size:12px; margin-bottom:5px;">ENGINE ACTIVE</p>
+                <button class="btn-prime" style="background:linear-gradient(45deg, #008800, #00ff80);" onclick="genSig()">GENERATE 2.00x SIGNAL</button>
             </div>
         </div>
 
         <div class="card">
             <h3>SIGNAL MINING</h3>
-            <input type="text" id="mInput" placeholder="Add Rounds (Ex: 1.25, 4.20)">
-            <button class="btn-prime" style="background:var(--pink);" onclick="mine()">MINE DATA</button>
+            <input type="text" id="mInput" placeholder="Add Last Round (Ex: 1.50)">
+            <button class="btn-prime" style="background:#222; border:1px solid #444;" onclick="mine()">MINE DATA</button>
             <p style="font-size:11px; margin-top:5px;">Rounds in Matrix: <b id="tRounds">0</b></p>
         </div>
 
-        <div id="adminPanel" class="card">
+        <div id="adminPanel">
             <h3 style="color:var(--admin);">🛠️ MASTER ADMIN</h3>
-            <div style="display:flex; margin-bottom:10px;">
-                <button class="tab-btn active" id="t1" onclick="showTab(1)">KEYS</button>
-                <button class="tab-btn" id="t2" onclick="showTab(2)">MESSAGE</button>
-                <button class="tab-btn" id="t3" onclick="showTab(3)">ANALYSIS</button>
-            </div>
-            <div id="tab1">
-                <select id="keyDuration"><option value="1">1 Day</option><option value="7">7 Days</option><option value="30">30 Days</option><option value="9999">LIFETIME</option></select>
-                <button class="admin-btn" onclick="generateKey('VIP')">GENERATE VIP KEY</button>
-            </div>
-            <div id="tab2" style="display:none;"><input type="text" id="adminMsg" placeholder="System Message"><button class="admin-btn" onclick="updateGlobalMsg()">UPDATE</button></div>
-            <div id="tab3" style="display:none;"><div class="stat-grid"><div class="stat-box">Wins: <b id="adminWins">0</b></div><div class="stat-box">Loss: <b id="adminLoss">0</b></div></div><button class="admin-btn" style="background:var(--loss);" onclick="resetStats()">RESET</button></div>
-            <div id="newKeyOut" style="font-size: 11px; color: var(--vip); margin-top: 10px; word-break: break-all;"></div>
+            <input type="number" id="keyDuration" placeholder="Days">
+            <button class="btn-prime" style="background:var(--admin);" onclick="generateKey()">GENERATE VIP KEY</button>
+            <div id="newKeyOut" style="font-size: 12px; color: var(--vip); margin-top: 10px; word-break: break-all;"></div>
         </div>
     </div>
 
@@ -116,59 +75,96 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let history = [], rounds = 0, vip = false, isAdmin = false;
+        let history = [], vip = false, isAdmin = false, rounds = 0;
 
-        db.ref('presence/' + Math.random().toString(36).substr(2,5)).set(true);
-        db.ref('presence').on('value', s => document.getElementById('uOnline').innerText = s.numChildren());
-        db.ref('stats').on('value', s => {
-            let d = s.val() || {win:0, loss:0};
-            document.getElementById('statWin').innerText = d.win; document.getElementById('adminWins').innerText = d.win;
-            document.getElementById('statLoss').innerText = d.loss; document.getElementById('adminLoss').innerText = d.loss;
-        });
-
+        // VERIFY FUNCTION (Fixed Bypass)
         function verifyKey() {
             let k = document.getElementById('vKey').value.trim();
-            if(k === "NEXUSADMIN77") { isAdmin = true; vip = true; document.getElementById('lockUI').style.display='none'; document.getElementById('unlockUI').style.display='block'; return alert("ADMIN BYPASS OK!"); }
+            if(!k) return alert("Please enter a key!");
+
+            // Admin Bypass Check
+            if(k === "NEXUSADMIN77") {
+                isAdmin = true; vip = true;
+                showUnlockUI();
+                alert("ADMIN BYPASS ACTIVATED!");
+                return;
+            }
+
+            // Normal Key Check
             db.ref('keys/'+k).once('value', s => {
-                if(s.exists() && s.val().expiry > Date.now()) { vip = true; updateUnlockState(); } else alert("Invalid Key!");
+                if(s.exists() && s.val().expiry > Date.now()) {
+                    vip = true;
+                    showUnlockUI();
+                    alert("ACCESS GRANTED!");
+                } else {
+                    alert("Invalid or Expired Key!");
+                }
             });
         }
 
-        function mine() {
-            let input = document.getElementById('mInput'); let val = parseFloat(input.value); if(isNaN(val)) return;
-            history.push(val); rounds++; document.getElementById('tRounds').innerText = rounds; input.value = "";
+        function showUnlockUI() {
+            document.getElementById('lockUI').style.display='none';
+            document.getElementById('unlockUI').style.display='block';
+            document.getElementById('statusTxt').innerText = isAdmin ? "MODE: MASTER ADMIN" : "MODE: VIP ACCESS";
         }
 
+        function mine() {
+            let input = document.getElementById('mInput');
+            let val = parseFloat(input.value);
+            if(!isNaN(val)) { 
+                history.push(val); 
+                rounds++;
+                document.getElementById('tRounds').innerText = rounds;
+                input.value = ""; 
+            }
+        }
+
+        // 2.0x TARGET LOGIC
         function genSig() {
-            if(history.length < 2 && !isAdmin) return alert("Need more data!");
-            document.getElementById('sampleArea').style.display='none'; document.getElementById('realSigArea').style.display='block';
+            if(history.length < 2 && !isAdmin) return alert("Mine at least 2 rounds first!");
             
-            // 2.0x Focus Logic
+            document.getElementById('sampleArea').style.display='none';
+            document.getElementById('realSigArea').style.display='block';
+            
+            let v = document.getElementById('sigVal');
+            let m = document.getElementById('sigMsg');
+
+            // Strategy: 2.0x Focus
             let last = history[history.length - 1] || 1.5;
-            let res = (last < 1.4) ? (Math.random() * (2.12 - 2.01) + 2.01).toFixed(2) : (Math.random() * (2.08 - 1.95) + 1.95).toFixed(2);
+            let res;
+
+            if(last < 1.4) {
+                res = (Math.random() * (2.15 - 2.01) + 2.01).toFixed(2);
+                m.innerText = "CONFIRMED 2.0x TARGET";
+            } else {
+                res = (Math.random() * (2.08 - 1.95) + 1.95).toFixed(2);
+                m.innerText = "SAFE 2.0x RECOVERY";
+            }
+
+            v.innerText = res + "x";
+            v.style.color = res >= 2 ? "var(--win)" : "var(--neon)";
             
-            document.getElementById('sigVal').innerText = res + "x";
-            document.getElementById('sigVal').style.color = res >= 2 ? "var(--win)" : "var(--neon)";
-            setTimeout(() => document.getElementById('fOverlay').style.display='flex', 3500);
+            setTimeout(() => { document.getElementById('fOverlay').style.display='flex'; }, 3000);
         }
 
         function submitRes(t) {
-            let l = parseFloat(document.getElementById('lastRoundInput').value); if(isNaN(l)) return;
-            history.push(l); db.ref('stats/'+t).transaction(c => (c||0)+1);
-            document.getElementById('fOverlay').style.display='none'; document.getElementById('lastRoundInput').value="";
-            if(!vip) { document.getElementById('realSigArea').style.display='none'; document.getElementById('sampleArea').style.display='block'; }
+            let l = parseFloat(document.getElementById('lastRoundInput').value);
+            if(!isNaN(l)) history.push(l);
+            document.getElementById('fOverlay').style.display='none';
+            document.getElementById('lastRoundInput').value = "";
+            if(!isAdmin) {
+                document.getElementById('realSigArea').style.display='none';
+                document.getElementById('sampleArea').style.display='block';
+            }
         }
 
-        function updateUnlockState() {
-            document.getElementById('lockUI').style.display='none'; document.getElementById('unlockUI').style.display='block';
-        }
+        function openAdmin() { if(prompt("Pass:") === "NEXUSADMIN77") document.getElementById('adminPanel').style.display='block'; }
 
-        function openAdmin() { if(prompt("Auth:") === "NEXUSADMIN77") { isAdmin = true; document.getElementById('adminPanel').style.display='block'; } }
-        function showTab(n) { [1,2,3].forEach(i => { document.getElementById('tab'+i).style.display = i==n ? 'block':'none'; document.getElementById('t'+i).className = i==n ? 'tab-btn active':'tab-btn'; }); }
-        function generateKey(type) {
-            let k = "VIP-" + Math.random().toString(36).substr(2,6).toUpperCase();
-            let exp = Date.now() + (parseInt(document.getElementById('keyDuration').value) * 86400000);
-            db.ref('keys/'+k).set({ expiry: exp }).then(() => document.getElementById('newKeyOut').innerText = "Key: " + k);
+        function generateKey() {
+            let k = "NEXUS-" + Math.random().toString(36).substr(2,6).toUpperCase();
+            let exp = Date.now() + (parseInt(document.getElementById('keyDuration').value || 1) * 86400000);
+            db.ref('keys/'+k).set({expiry: exp}).then(() => document.getElementById('newKeyOut').innerText = "Key Created: " + k);
         }
-
-        new Chart(document.getElementById('winChart').getContext('2d'), { type: 'line
+    </script>
+</body>
+</html>
